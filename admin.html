@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UINRENT – Admin Panel (Firebase)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <!-- === ADD FIREBASE V8 "COMPAT" SDKs === -->
+    <!-- This method works without a server (file:/// path) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    
+    <style>
+        :root {
+            --primary: #FF7F00;
+            --primary-light: #FF9933;
+            --card-bg: #1F2937; /* Gray-800 equivalent */
+            --dark-bg: #111827; /* Gray-900 equivalent */
+        }
+        body {font-family:'Inter',sans-serif;background:var(--dark-bg);color:#f3f4f6;}
+        .btn-primary{background:var(--primary);color:#111827;font-weight:600;transition:transform .1s;}
+        .btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);}
+        .card{background:var(--card-bg);border:1px solid #374151;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);}
+        .input{border:1px solid #4b5563;background:#1F2937;color:#fff;}
+        .input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 2px rgba(255, 127, 0, 0.5);}
+        .badge-new{background:#047857;color:#fff;} /* Green */
+        .badge-popular{background:#DC2626;color:#fff;} /* Red */
+        .modal-content{max-height:90vh;overflow-y:auto;}
+        .hidden{display:none !important;}
+        .animate-fade{animation:fadeIn .4s ease forwards;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+    </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
+    <div class="card rounded-2xl p-8 w-full max-w-md shadow-2xl">
+        <h1 class="text-5xl font-extrabold text-center text-orange-500 mb-2">UINRENT</h1>
+        <p class="text-center text-gray-400 mb-8 font-light">Admin Access Required</p>
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Email</label>
+                <input type="email" id="admin-email" class="input w-full p-3 rounded-xl focus:ring-2" placeholder="admin@uinrent.com" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-gray-300">Password</label>
+                <input type="password" id="admin-pass" class="input w-full p-3 rounded-xl focus:ring-2" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="w-full btn-primary font-bold py-3 rounded-xl shadow-lg">Login Securely</button>
+            <p id="login-error" class="text-red-400 text-center text-sm hidden mt-3 font-semibold">Invalid credentials. Please check your login details.</p>
+        </form>
+        <!-- HINT REMOVED -->
+    </div>
+</div>
+
+<!-- ==================== ADMIN DASHBOARD ==================== -->
+<div id="dashboard" class="hidden min-h-screen p-4 md:p-10">
+    <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-gray-700 mb-8">
+        <h1 class="text-4xl font-extrabold text-orange-500 mb-2 md:mb-0">Fleet Dashboard</h1>
+        <div class="flex space-x-3 items-center">
+            <button onclick="openAddModal()" class="btn-primary flex items-center px-4 py-2 rounded-xl shadow-md">
+                <i class="fas fa-plus mr-2"></i> Add New Vehicle
+            </button>
+            <button onclick="logout()" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-xl shadow-md">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <!-- Summary Cards -->
+        <div class="card p-6 rounded-2xl shadow-xl">
+            <h3 class="text-lg font-semibold mb-3 text-gray-400">Total Cars Managed</h3>
+            <p id="total-cars" class="text-4xl font-bold text-orange-400">0</p>
+        </div>
+        <div class="card p-6 rounded-2xl shadow-xl">
+            <h3 class="text-lg font-semibold mb-3 text-gray-400">Rentals (This Month)</h3>
+            <p id="total-rentals" class="text-4xl font-bold text-green-400">0</p>
+        </div>
+        <div class="card p-6 rounded-2xl shadow-xl">
+            <h3 class="text-lg font-semibold mb-3 text-gray-400">Total Revenue (This Month)</h3>
+            <p id="total-revenue" class="text-4xl font-bold text-blue-400">€0.00</p>
+        </div>
+    </div>
+
+    <!-- === NEW: RENTALS THIS MONTH === -->
+    <div class="card p-6 rounded-2xl overflow-x-auto shadow-2xl mb-10">
+        <h2 class="text-2xl font-bold mb-5 text-gray-200">Rentals This Month</h2>
+        <table class="w-full text-left table-auto min-w-max">
+            <thead class="border-b-2 border-green-500 text-gray-400 text-sm uppercase">
+                <tr>
+                    <th class="py-3 px-3">Date Booked</th>
+                    <th class="py-3 px-3">Car Model</th>
+                    <th class="py-3 px-3">Customer</th>
+                    <th class="py-3 px-3">Rental Dates</th>
+                    <th class="py-3 px-3 text-center">Sundays</th>
+                    <th class="py-3 px-3">Total</th>
+                </tr>
+            </thead>
+            <tbody id="rentals-table-body" class="divide-y divide-gray-700">
+                <!-- Data inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <p id="empty-rentals-message" class="text-center text-gray-500 p-8 hidden">
+            No rentals have been booked this month.
+        </p>
+    </div>
+
+    <!-- Cars Table -->
+    <div class="card p-6 rounded-2xl overflow-x-auto shadow-2xl">
+        <h2 class="text-2xl font-bold mb-5 text-gray-200">Vehicle Inventory</h2>
+        <table class="w-full text-left table-auto min-w-max">
+            <thead class="border-b-2 border-orange-500 text-gray-400 text-sm uppercase">
+                <tr>
+                    <th class="py-3 px-3">Model</th>
+                    <th class="py-3 px-3">Image</th>
+                    <th class="py-3 px-3">Specs</th>
+                    <th class="py-3 px-3">Badge</th>
+                    <th class="py-3 px-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="cars-table-body" class="divide-y divide-gray-700">
+                <!-- Data inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <p id="empty-fleet-message" class="text-center text-gray-500 p-8 hidden">
+            The fleet is empty. Use the "Add New Vehicle" button to populate the inventory.
+        </p>
+    </div>
+</div>
+
+<!-- ==================== MODAL – ADD / EDIT CAR ==================== -->
+<div id="car-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden p-4">
+    <div class="card w-full max-w-4xl rounded-2xl modal-content shadow-2xl modal animate-fade">
+        <div class="p-6">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-6">
+                <h2 id="modal-title" class="text-3xl font-bold text-orange-400">Add New Car</h2>
+                <button onclick="closeModal('car-modal')" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="car-form" class="space-y-6">
+                <input type="hidden" id="edit-id">
+
+                <!-- Vehicle Details -->
+                <fieldset class="border border-gray-700 p-4 rounded-xl">
+                    <legend class="text-lg font-semibold text-orange-400 px-2">Vehicle Details</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Model Name</label>
+                            <input type="text" id="model" class="input w-full p-3 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Badge</label>
+                            <select id="badge" class="input w-full p-3 rounded-lg">
+                                <option value="">None</option>
+                                <option value="new">New Arrival</option>
+                                <option value="popular">Popular Choice</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Seats</label>
+                            <input type="number" id="seats" min="2" max="9" class="input w-full p-3 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Luggage (bags)</label>
+                            <input type="number" id="luggage" min="1" max="10" class="input w-full p-3 rounded-lg" required>
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium mb-1">Range / Engine (e.g. Fuel-efficient)</label>
+                            <input type="text" id="range" class="input w-full p-3 rounded-lg" required>
+                        </div>
+                    </div>
+                </fieldset>
+                
+                <!-- Images and Descriptions -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <fieldset class="border border-gray-700 p-4 rounded-xl">
+                        <legend class="text-lg font-semibold text-orange-400 px-2">Image URLs</legend>
+                        <label class="block text-sm font-medium mb-1">Images (comma-separated URLs)</label>
+                        <textarea id="images" rows="5" class="input w-full p-3 rounded-lg" placeholder="https://...jpg, https://...png"></textarea>
+                        <p class="text-xs text-gray-400 mt-1">**First image is the main one.** Add at least 1.</p>
+                    </fieldset>
+                    <fieldset class="border border-gray-700 p-4 rounded-xl">
+                        <legend class="text-lg font-semibold text-orange-400 px-2">Descriptions</legend>
+                        <label class="block text-sm font-medium mb-1">Description (EN)</label>
+                        <textarea id="desc_en" rows="3" class="input w-full p-3 rounded-lg mb-4" required></textarea>
+                        <label class="block text-sm font-medium mb-1">Description (RO)</label>
+                        <textarea id="desc_ro" rows="3" class="input w-full p-3 rounded-lg" required></textarea>
+                    </fieldset>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('car-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">Cancel</button>
+                    <button type="submit" id="save-button" class="px-5 py-2 btn-primary rounded-xl shadow-lg">Save Vehicle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== CUSTOM ALERT/CONFIRM MODAL ==================== -->
+<div id="custom-alert-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] hidden p-4">
+    <div class="card w-full max-w-sm p-6 rounded-2xl modal animate-fade shadow-2xl">
+        <h3 id="custom-alert-title" class="text-2xl font-bold mb-3 text-orange-400"></h3>
+        <p id="custom-alert-message" class="text-gray-300 mb-6"></p>
+        <div id="custom-alert-actions" class="flex justify-end space-x-3">
+            <!-- Action buttons added here -->
+        </div>
+    </div>
+</div>
+
+
+<!-- === REGULAR SCRIPT TAG (NO MODULE) === -->
+<script>
+    // ===============================================
+    // === 1. YOUR FIREBASE CONFIG                 ===
+    // ===============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQi_9PATsfdGL_StdPbtyYJPZsla5SwDY",
+      authDomain: "uin-rent-website.firebaseapp.com",
+      projectId: "uin-rent-website",
+      storageBucket: "uin-rent-website.firebasestorage.app",
+      messagingSenderId: "200564838706",
+      appId: "1:200564838706:web:e6b77a3e1c99d8d7ea472b"
+    };
+    
+    // ===============================================
+    // === 2. INITIALIZE FIREBASE & GLOBALS        ===
+    // ===============================================
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const carsCollection = db.collection("cars");
+    const rentalsCollection = db.collection("rentals");
+
+    const ADMIN_EMAIL = 'uinrent@gmail.com';
+    const ADMIN_PASS  = 'admin123';
+    let editingId = null;
+
+    // ===============================================
+    // === 3. AUTHENTICATION                       ===
+    // ===============================================
+    document.getElementById('login-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const email = document.getElementById('admin-email').value.trim();
+        const pass  = document.getElementById('admin-pass').value;
+        if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+            localStorage.setItem('uinrent_admin', 'true');
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadData();
+        } else {
+            document.getElementById('login-error').classList.remove('hidden');
+        }
+    });
+
+    function logout() {
+        localStorage.removeItem('uinrent_admin');
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    /* ==================== UTILITIES & CUSTOM MODALS ==================== */
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function showCustomMessage(title, message) {
+        const modal = document.getElementById('custom-alert-modal');
+        document.getElementById('custom-alert-title').textContent = title;
+        document.getElementById('custom-alert-message').textContent = message;
+        const actionsDiv = document.getElementById('custom-alert-actions');
+        actionsDiv.innerHTML = `<button onclick="closeModal('custom-alert-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">OK</button>`;
+        modal.classList.remove('hidden');
+    }
+
+    function showCustomConfirm(title, message, confirmCallback) {
+        const modal = document.getElementById('custom-alert-modal');
+        document.getElementById('custom-alert-title').textContent = title;
+        document.getElementById('custom-alert-message').textContent = message;
+        const actionsDiv = document.getElementById('custom-alert-actions');
+        
+        actionsDiv.innerHTML = `
+            <button onclick="closeModal('custom-alert-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">Cancel</button>
+            <button id="confirm-action-btn" class="px-5 py-2 btn-primary rounded-xl">Confirm</button>
+        `;
+
+        // We can't use .onclick in a non-module script if the function is defined inside another scope
+        // So we add the event listener directly
+        const confirmBtn = document.getElementById('confirm-action-btn');
+        confirmBtn.onclick = () => {
+             closeModal('custom-alert-modal');
+             confirmCallback();
+        };
+        modal.classList.remove('hidden');
+    }
+
+    /* ==================== DATA LOADING & RENDERING ==================== */
+    function loadData() {
+        // NO SEEDING FUNCTION - USER WANTS TO START EMPTY
+        loadRentals();
+        loadCars();
+    }
+
+    // === RENTALS DASHBOARD ===
+    async function loadRentals() {
+        const tbody = document.getElementById('rentals-table-body');
+        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">Loading rentals...</td></tr>';
+
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        
+        let totalRevenue = 0;
+        let rentalCount = 0;
+
+        try {
+            const snapshot = await rentalsCollection
+                .where('rentalDate', '>=', startOfMonth)
+                .orderBy('rentalDate', 'desc')
+                .get();
+
+            if (snapshot.empty) {
+                document.getElementById('empty-rentals-message').classList.remove('hidden');
+                tbody.innerHTML = '';
+            } else {
+                document.getElementById('empty-rentals-message').classList.add('hidden');
+                tbody.innerHTML = ''; // Clear loading
+                snapshot.forEach(doc => {
+                    const rental = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-800 transition-colors';
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 text-sm text-gray-400">${new Date(rental.rentalDate).toLocaleDateString()}</td>
+                        <td class="py-3 px-3 font-semibold text-white">${rental.carModel}</td>
+                        <td class="py-3 px-3 text-sm text-gray-300">
+                            ${rental.customerName}<br>
+                            <span class="text-xs text-gray-500">${rental.customerPhone || rental.customerEmail}</span>
+                        </td>
+                        <td class="py-3 px-3 text-sm text-gray-400">${rental.pickupDate} → ${rental.returnDate}</td>
+                        <td class="py-3 px-3 text-center text-lg font-bold text-yellow-400">${rental.sundaysCount || 0}</td>
+                        <td class="py-3 px-3 font-semibold text-green-400">€${parseFloat(rental.totalCost).toFixed(2)}</td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                    totalRevenue += parseFloat(rental.totalCost);
+                    rentalCount++;
+                });
+            }
+            
+            // Update stats
+            document.getElementById('total-rentals').textContent = rentalCount;
+            document.getElementById('total-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
+
+        } catch (error) {
+            console.error("Error loading rentals: ", error);
+            showCustomMessage("Error", "Could not load rentals. Check console for details.");
+        }
+    }
+
+    // === CARS DASHBOARD ===
+    async function loadCars() {
+        const tbody = document.getElementById('cars-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">Loading cars...</td></tr>';
+        
+        try {
+            const snapshot = await carsCollection.orderBy('model').get();
+            
+            if (snapshot.empty) {
+                document.getElementById('empty-fleet-message').classList.remove('hidden');
+                tbody.innerHTML = '';
+                document.getElementById('total-cars').textContent = 0;
+            } else {
+                document.getElementById('empty-fleet-message').classList.add('hidden');
+                tbody.innerHTML = ''; // Clear loading
+                let carCount = 0;
+                snapshot.forEach(doc => {
+                    const car = doc.data();
+                    car.id = doc.id; // Assign the Firestore ID
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-800 transition-colors';
+                    
+                    const badgeHtml = car.badge ? `<span class="badge-${car.badge} px-2 py-1 rounded-full text-xs font-semibold">${car.badge}</span>` : '<span class="text-gray-500 text-xs">None</span>';
+                    
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 font-semibold text-white">${car.model}</td>
+                        <td class="py-3 px-3">
+                            <img src="${car.images[0]}" alt="${car.model}" onerror="this.onerror=null;this.src='https://placehold.co/80x40/1F2937/6B7280?text=No+Img'" class="w-20 h-10 object-cover rounded-md border border-gray-600">
+                        </td>
+                        <td class="py-3 px-3 text-sm text-gray-300">
+                            <i class="fas fa-users mr-1 text-orange-400"></i> ${car.seats} seats
+                            <br>
+                            <i class="fas fa-suitcase-rolling mr-1 text-orange-400"></i> ${car.luggage} bags
+                        </td>
+                        <td class="py-3 px-3">${badgeHtml}</td>
+                        <td class="py-3 px-3 flex space-x-2">
+                            <button onclick="openEditModal('${car.id}')" class="text-blue-400 hover:text-blue-300 transition-colors">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="confirmDeleteCar('${car.id}', '${car.model}')" class="text-red-400 hover:text-red-300 transition-colors">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                    carCount++;
+                });
+                document.getElementById('total-cars').textContent = carCount;
+            }
+        } catch (error) {
+            console.error("Error loading cars: ", error);
+            showCustomMessage("Error", "Could not load cars. Check console for details.");
+        }
+    }
+
+    /* ==================== CAR MODAL CONTROL (ADD/EDIT) ==================== */
+
+    window.openAddModal = function() {
+        editingId = null;
+        document.getElementById('modal-title').textContent = 'Add New Vehicle';
+        document.getElementById('car-form').reset();
+        document.getElementById('edit-id').value = '';
+        document.getElementById('car-modal').classList.remove('hidden');
+    }
+
+    window.openEditModal = async function(id) {
+        try {
+            const docRef = carsCollection.doc(id);
+            const doc = await docRef.get();
+            if (!doc.exists) {
+                showCustomMessage("Error", "Car not found.");
+                return;
+            }
+            const car = doc.data();
+            editingId = id;
+            
+            document.getElementById('modal-title').textContent = `Edit Vehicle: ${car.model}`;
+            document.getElementById('edit-id').value = id;
+            document.getElementById('model').value = car.model;
+            document.getElementById('seats').value = car.seats;
+            document.getElementById('luggage').value = car.luggage;
+            document.getElementById('range').value = car.range;
+            document.getElementById('badge').value = car.badge || '';
+            document.getElementById('images').value = car.images.join(', ');
+            document.getElementById('desc_en').value = car.description_en;
+            document.getElementById('desc_ro').value = car.description_ro;
+
+            document.getElementById('car-modal').classList.remove('hidden');
+        } catch (error) {
+            console.error("Error fetching car for edit: ", error);
+            showCustomMessage("Error", "Could not fetch car details.");
+        }
+    }
+
+    /* ==================== SAVE CAR (ADD/EDIT) ==================== */
+    document.getElementById('car-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveButton = document.getElementById('save-button');
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+
+        const imagesRaw = document.getElementById('images').value.trim();
+        const imagesArray = imagesRaw.split(',').map(s => s.trim()).filter(Boolean);
+
+        if (imagesArray.length < 1) {
+            showCustomMessage('Image Requirement Failed', 'You must provide at least 1 image URL for the vehicle.');
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Vehicle';
+            return;
+        }
+
+        const carData = {
+            model: document.getElementById('model').value.trim(),
+            seats: +document.getElementById('seats').value,
+            luggage: +document.getElementById('luggage').value,
+            range: document.getElementById('range').value.trim(),
+            badge: document.getElementById('badge').value || '',
+            images: imagesArray,
+            description_en: document.getElementById('desc_en').value.trim(),
+            description_ro: document.getElementById('desc_ro').value.trim(),
+        };
+
+        try {
+            if (editingId) {
+                // Update existing car
+                await carsCollection.doc(editingId).set(carData, { merge: true });
+                showCustomMessage('Success', `Vehicle ${carData.model} updated.`);
+            } else {
+                // Add new car
+                await carsCollection.add(carData);
+                showCustomMessage('Success', `New vehicle ${carData.model} added.`);
+            }
+            
+            await loadData(); // Reload all data
+            closeModal('car-modal');
+        } catch (error) {
+            console.error("Error saving car: ", error);
+            showCustomMessage("Error", "Could not save car. Check console.");
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Vehicle';
+            editingId = null;
+        }
+    });
+
+    /* ==================== DELETE CAR ==================== */
+    window.confirmDeleteCar = function(id, model) {
+        if (!model) { // Failsafe
+            model = "this car";
+        }
+        
+        showCustomConfirm(
+            'Confirm Vehicle Deletion',
+            `Are you sure you want to delete ${model}? This action is permanent.`,
+            () => deleteCar(id)
+        );
+    }
+
+    async function deleteCar(id) {
+        try {
+            await carsCollection.doc(id).delete();
+            showCustomMessage('Deleted', 'Vehicle successfully removed from the fleet.');
+            await loadData(); // Reload all data
+        } catch (error) {
+            console.error("Error deleting car: ", error);
+            showCustomMessage("Error", "Could not delete car. Check console.");
+        }
+    }
+    
+    /* ==================== AUTO LOGIN CHECK ==================== */
+    window.addEventListener('load', () => {
+        if (localStorage.getItem('uinrent_admin') === 'true') {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            loadData();
+        }
+    });
+
+    // Make functions globally accessible
+    window.openAddModal = openAddModal;
+    window.openEditModal = openEditModal;
+    window.confirmDeleteCar = confirmDeleteCar;
+    window.logout = logout;
+    window.closeModal = closeModal;
+
+</script>
+
+</body>
+</html>
