@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-en="UINRENT - Affordable Car Rental" data-ro="UINRENT - Închirieri Auto Accesibile">UINRENT - Affordable Car Rental</title>
@@ -9,68 +8,82 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="icon" type="image/png" href="favicon.png">
-    <!-- === ADD FIREBASE V8 "COMPAT" SDKs === -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
         :root {
-            --color-primary: #FF7F00; /* Vibrant Orange */
-            --color-primary-light: #FF9933;
-            --color-dark-bg: #14181F; /* Very Dark Blue-Gray */
-            --color-card-bg: #1E232B;
-            --color-light-bg: #FFFFFF; /* White for light mode */
-            --color-light-card-bg: #F3F4F6; /* Light gray for cards */
-            --color-light-text: #1F2937; /* Dark text for light mode */
-            transition: --color-primary 0.8s ease, --color-primary-light 0.8s ease;
+            /* Primary brand colors (blue) */
+            --color-primary: #3B82F6; /* Tailwind Blue 500 */
+            --color-primary-light: #60A5FA; /* Tailwind Blue 400 */
+            
+            /* Default Light Mode Colors */
+            --bg-body: #FFFFFF;
+            --bg-card: #F3F4F6;
+            --text-main: #1F2937;
+            --text-secondary: #4B5563;
+            --border-color: #D1D5DB;
+            --header-bg-opacity: rgba(255, 255, 255, 0.92);
+            --header-border-color: #e5e7eb;
+            --input-bg: #F3F4F6; /* Light gray for inputs */
+            --modal-bg: #F3F4F6;
+            --modal-bg-card: #F9FAFB;
+            --nav-menu-bg: #FFFFFF;
+            --nav-menu-text: #1F2937;
+            --nav-menu-hover-bg: #E5E7EB;
+
+            transition: all 0.8s ease;
         }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-dark-bg);
-            color: var(--color-light-text, #D1D5DB);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             transition: background-color 0.8s ease, color 0.8s ease;
         }
-        body.light-mode {
-            background-color: var(--color-light-bg);
-            --color-card-bg: var(--color-light-card-bg);
-            --color-dark-bg: var(--color-light-bg);
-            color: var(--color-light-text);
-        }
-        body.light-mode .text-white { color: var(--color-light-text) !important; }
-        body.light-mode .text-gray-400 { color: #4B5563 !important; }
-        body.light-mode .text-gray-300 { color: #374151 !important; }
-        body.light-mode .text-gray-500 { color: #6B7280 !important; }
-        body.light-mode .bg-gray-700 { background-color: #E5E7EB !important; }
-        body.light-mode .border-gray-700 { border-color: #D1D5DB !important; }
-        body.light-mode .text-green-400 { color: #22C55E !important; }
-        body.light-mode .text-red-400 { color: #EF4444 !important; }
-        body.light-mode .bg-card-bg { background-color: var(--color-light-card-bg) !important; }
-        body.light-mode .bg-gray-800 { background-color: #F3F4F6 !important; }
-        body.light-mode .bg-gray-700 { background-color: #FFFFFF !important; }
-        body.light-mode .border-gray-600 { border-color: #D1D5DB !important; }
-        body.light-mode #booking-error-message { background-color: rgba(254, 202, 202, 0.5) !important; color: #B91C1C !important; }
-        body.light-mode .bg-gray-600:hover { background-color: #D1D5DB !important; }
-        .text-dark-bg { color: var(--color-dark-bg); }
+        
+        /* General styles using CSS variables */
+        .text-main { color: var(--text-main); }
+        .text-secondary { color: var(--text-secondary); }
+        .bg-card { background-color: var(--bg-card); }
+        .border-color { border-color: var(--border-color); }
+        .input-bg { background-color: var(--input-bg); }
+
+        .text-white { color: var(--text-main) !important; } 
+        .text-gray-400 { color: var(--text-secondary) !important; }
+        .text-gray-300 { color: var(--text-secondary) !important; }
+        .text-gray-500 { color: var(--text-secondary) !important; }
+        .bg-gray-700 { background-color: var(--input-bg) !important; } /* For table headers and inputs */
+        .border-gray-700 { border-color: var(--border-color) !important; }
+        .bg-card-bg { background-color: var(--bg-card) !important; }
+        .bg-gray-800 { background-color: var(--bg-card) !important; } /* Used for booking form background */
+        .bg-gray-600:hover { background-color: var(--border-color) !important; } /* Hover for close button */
+        .border-gray-600 { border-color: var(--border-color) !important; } /* Input borders */
+
+        .text-green-400 { color: #22C55E !important; }
+        .text-red-400 { color: #EF4444 !important; }
+        #booking-error-message { background-color: rgba(254, 202, 202, 0.5) !important; color: #B91C1C !important; }
+        
         .bg-primary { background-color: var(--color-primary); transition: background-color 0.8s ease; }
         .hover\:bg-primary-light:hover { background-color: var(--color-primary-light); transition: background-color 0.8s ease; }
         .text-primary { color: var(--color-primary); transition: color 0.8s ease; }
         .text-primary-light { color: var(--color-primary-light); transition: color 0.8s ease; }
-        .bg-card-bg { background-color: var(--color-card-bg); }
-        .badge-new { background-color: #00A389; } /* Teal */
-        .badge-popular { background-color: #FF5733; } /* Red-Orange */
+        
+        .badge-new { background-color: #00A389; }
+        .badge-popular { background-color: #FF5733; }
+        
         .filter-active {
             background-color: var(--color-primary) !important;
-            color: var(--color-dark-bg) !important;
+            color: #FFFFFF !important;
             font-weight: 600;
             transition: background-color 0.8s ease;
         }
+        
         input[type="date"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
-            filter: invert(1);
+            filter: none; /* Always light mode */
         }
-        body.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
-             filter: none; /* Reset filter for light mode */
-        }
+
         .header-fixed {
             position: fixed;
             top: 0;
@@ -79,15 +92,12 @@
             z-index: 1000;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            background-color: rgba(26, 29, 38, 0.92);
-            border-bottom: 1px solid rgba(255, 107, 53, 0.25);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            background-color: var(--header-bg-opacity);
+            border-bottom: 1px solid var(--header-border-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             transition: all 0.6s ease;
         }
-        body.light-mode .header-fixed {
-            background-color: rgba(255, 255, 255, 0.92);
-            border-bottom: 1px solid #e5e7eb;
-        }
+
         .animate-float { animation: float 8s ease-in-out infinite; }
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -111,26 +121,9 @@
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        @keyframes rainbowGlow {
-            0% { box-shadow: 0 0 10px #FF7F00; }
-            25% { box-shadow: 0 0 15px #FF5733; }
-            50% { box-shadow: 0 0 20px #00A389; }
-            75% { box-shadow: 0 0 15px #FF9933; }
-            100% { box-shadow: 0 0 10px #FF7F00; }
-        }
-        @keyframes pulseScale {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.04); }
-            100% { transform: scale(1); }
-        }
-        @keyframes rotateHue {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-        .animate-rainbow { animation: rainbowGlow 6s ease-in-out infinite, pulseScale 2.5s ease-in-out infinite; }
-        .animate-hue { animation: rotateHue 15s linear infinite; }
+        
         .hero-section {
-            margin-top: 140px;
+            margin-top: 100px;
             animation: slideInUp 2s ease-out forwards;
         }
         @keyframes slideInUp {
@@ -145,7 +138,7 @@
         .car-img:hover {
             transform: scale(1.05) rotate(1deg);
             filter: brightness(1.1) saturate(1.3);
-            box-shadow: 0 12px 30px rgba(255, 127, 0, 0.4);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
         }
         .car-img img { transition: all 0.8s ease; }
         .car-img:hover img { transform: scale(1.1); }
@@ -169,23 +162,7 @@
             transition: transform 0.4s ease;
         }
         .contact-link:hover svg { transform: rotate(10deg); }
-        .top-banner {
-            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
-            background-size: 300% 100%;
-            animation: gradientShift 12s ease infinite;
-            color: white;
-            text-align: center;
-            padding: 0.75rem;
-            font-weight: bold;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            transition: all 0.8s ease;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+
         .lang-btn {
             transition: transform 0.4s ease, background-color 0.8s ease, color 0.8s ease;
         }
@@ -194,7 +171,6 @@
             .hero-section { animation-duration: 1.5s; }
             .car-img { transition-duration: 0.6s; }
             .btn-bounce:hover { animation-duration: 0.6s; }
-            .top-banner { animation-duration: 8s; }
             :root { transition-duration: 0.6s; }
         }
         .parallax-layer {
@@ -235,146 +211,292 @@
         .animate-smooth {
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
         }
-        .lang-btn {
-            position: relative;
-            overflow: hidden;
-            transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 1s ease, color 1s ease;
-        }
-        .lang-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.5), transparent);
-            transition: left 1s ease;
-        }
-        .lang-btn:hover::before { left: 100%; }
-        .lang-btn:hover { transform: scale(1.1); }
-        [class*="transition"] {
-            transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-        }
-        .green-badge {
-            display: inline-block;
-            background-color: #22c55e;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-left: 0.5rem;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
-        }
-        .feedback-section {
-            margin-top: 4rem;
+        
+        .reviews-section, .contact-section {
             padding: 2rem;
-            background-color: var(--color-card-bg);
+            background-color: var(--bg-card);
             border-radius: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
         }
-        .feedback-card {
+        
+        .static-rating-box {
             display: flex;
-            gap: 1rem;
-            padding: 1.5rem;
-            background-color: rgba(255, 255, 255, 0.05);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-body);
+            padding: 2.5rem;
             border-radius: 1rem;
-            margin-bottom: 1.5rem;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.8s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+            animation: float 6s ease-in-out infinite;
         }
-        .feedback-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 127, 0, 0.2);
-        }
-        .feedback-avatar {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            object-fit: cover;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .feedback-stars {
+        .static-rating-stars {
             color: #fbbf24;
-            font-size: 1rem;
+            font-size: 2.5rem;
+            line-height: 1;
         }
+        /* === NEW: Half-star styling === */
+        .star-half {
+            display: inline-block;
+            position: relative;
+            color: #fbbf24;
+        }
+        .star-half::before {
+            content: '★';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50%;
+            overflow: hidden;
+        }
+        .star-empty {
+            color: #D1D5DB; /* Light gray for empty part */
+        }
+
+        .static-rating-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #22C55E;
+            margin-top: 1rem;
+            line-height: 1;
+        }
+        .static-rating-count {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 0.75rem;
+        }
+        
+        .hamburger-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--nav-menu-bg);
+            color: var(--nav-menu-text);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding-top: 4rem;
+        }
+        .hamburger-menu.open {
+            transform: translateX(0);
+        }
+        .hamburger-menu-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--nav-menu-text);
+        }
+        .hamburger-menu a {
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: block;
+            text-decoration: none;
+            color: var(--nav-menu-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .hamburger-menu a:hover {
+            background-color: var(--nav-menu-hover-bg);
+            color: var(--color-primary);
+        }
+        .hamburger-menu .lang-toggle {
+            display: flex;
+            justify-content: center;
+            padding: 1rem 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        .hamburger-menu .lang-toggle button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.2rem;
+            margin: 0 0.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .hamburger-menu .lang-toggle button.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .hamburger-icon {
+            cursor: pointer;
+            color: var(--text-main);
+            transition: color 0.8s ease;
+        }
+
+        .accordion-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: background-color 0.8s ease, border-color 0.8s ease;
+        }
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: color 0.8s ease;
+        }
+        .accordion-header:hover {
+            background-color: var(--nav-menu-hover-bg);
+        }
+        .accordion-content {
+            padding: 0 1.25rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            color: var(--text-secondary);
+        }
+        .accordion-content p, .accordion-content ul {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .accordion-content ul {
+            list-style-type: disc;
+            margin-left: 1.25rem;
+        }
+        .accordion-arrow {
+            transition: transform 0.3s ease;
+        }
+        .accordion-header.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .accordion-header.active + .accordion-content {
+            max-height: 500px;
+            padding-bottom: 1.25rem;
+        }
+        
+        /* === NEW: Agreement Modal Styles === */
+        #agreement-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            transition: opacity 0.3s ease;
+        }
+        #agreement-modal-content {
+            background-color: var(--bg-body);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+        }
+
         @media (max-width: 768px) {
             body { font-size: 0.95rem; }
-            .hero-section { margin-top: 100px; padding: 1rem; }
-            /* FIXED: Changed from 3 columns to 1 on mobile */
+            .hero-section { margin-top: 80px; padding: 1rem; }
             .inventory-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
             .car-card { margin-bottom: 2rem; }
-            .feedback-section { padding: 1rem; }
-            .feedback-card { flex-direction: column; align-items: center; text-align: center; }
+            .reviews-section, .contact-section, .info-section { padding: 1rem; }
             .animate-smooth { transition-duration: 0.6s; }
             .parallax-layer { opacity: 0.1; }
-            .top-banner { font-size: 1rem; padding: 0.5rem; }
-            .green-badge { font-size: 0.75rem; }
-            .lang-btn { padding: 0.5rem 1rem; }
+            .hamburger-icon { font-size: 1.8rem; }
+            .hamburger-menu a { font-size: 1.25rem; padding: 0.8rem 1.5rem; }
+            .hamburger-menu .lang-toggle button { font-size: 1rem; padding: 0.6rem 1.2rem; }
+            .accordion-header { padding: 1rem 1.25rem; font-size: 1rem; }
+            .accordion-content { padding: 0 1.25rem; }
         }
         html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="text-gray-200 antialiased">
-    <!-- === CASH OR CARD ON ARRIVAL – ANIMATED GRADIENT BANNER === -->
-    <div class="top-banner">
-        CASH OR CARD ON ARRIVAL <span class="green-badge">Cash or Card on Arrival</span>
-    </div>
-    <!-- Global Header -->
-    <header class="header-fixed bg-card-bg/90 shadow-lg z-10 border-b border-gray-700">
+<body class="antialiased">
+    
+    <header class="header-fixed shadow-lg z-10">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-3xl font-extrabold text-primary">UINRENT</h1>
-            <div class="flex space-x-2">
-                <button id="lang-en" onclick="setLang('en')" class="lang-btn rounded-full px-3 py-1 text-sm transition font-medium btn-bounce">EN</button>
-                <button id="lang-ro" onclick="setLang('ro')" class="lang-btn rounded-full px-3 py-1 text-sm transition font-medium btn-bounce">RO</button>
-                <button id="toggle-mode" onclick="toggleMode()" class="lang-btn rounded-full px-3 py-1 text-sm transition font-medium btn-bounce">🌙</button>
+            <div class="flex items-center space-x-2">
+                <button id="hamburger-btn" class="hamburger-icon focus:outline-none" onclick="toggleHamburgerMenu()">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </header>
+
+    <div id="hamburger-menu" class="hamburger-menu">
+        <button class="hamburger-menu-close" onclick="toggleHamburgerMenu()">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <nav class="flex flex-col mt-10">
+            <a href="#inventory-grid" onclick="toggleHamburgerMenu()" data-en="Cars" data-ro="Mașini">Cars</a>
+            <a href="#reviews-section" onclick="toggleHamburgerMenu()" data-en="Reviews" data-ro="Recenzii">Reviews</a>
+            <a href="#contact-section" onclick="toggleHamburgerMenu()" data-en="Contact Us" data-ro="Contactează-ne">Contact Us</a>
+            <a href="#info-section" onclick="toggleHamburgerMenu()" data-en="Information" data-ro="Informații">Information</a>
+        </nav>
+        <div class="lang-toggle">
+            <button id="lang-en-btn" onclick="setLang('en')" class="rounded-full px-3 py-1 font-medium">EN</button>
+            <button id="lang-ro-btn" onclick="setLang('ro')" class="rounded-full px-3 py-1 font-medium">RO</button>
+        </div>
+    </div>
+
     <main class="max-w-6xl mx-auto px-4 py-12">
         
-        <!-- Hero Section (LOWER + FULL ANIMATION) -->
         <section class="hero-section mb-16 text-center">
             <div class="parallax-layer"></div>
             <div class="parallax-layer"></div>
-            <h2 data-en="Affordable Freedom" data-ro="Libertate Accesibilă" class="text-5xl md:text-6xl font-extrabold text-white mb-4">Affordable Freedom</h2>
-            <p data-en="Drive across Romania..." data-ro="Parcurge România și nu numai cu flota noastră de mașini Dacia robuste — fiabile, spațioase și pregătite pentru orice călătorie. De la străzile orașului la drumurile de munte, te acoperim." class="max-w-3xl mx-auto text-lg text-gray-400 mb-8">Drive across Romania and beyond with our fleet of rugged Dacia-style cars — reliable, spacious, and ready for any journey. From city streets to mountain roads, we’ve got you covered.</p>
+            <h2 data-en="Affordable Freedom" data-ro="Libertate Accesibilă" class="text-5xl md:text-6xl font-extrabold text-main mb-4">Affordable Freedom</h2>
+            <p data-en="Drive across Romania..." data-ro="Parcurge România și nu numai cu flota noastră de mașini Dacia robuste — fiabile, spațioase și pregătite pentru orice călătorie. De la străzile orașului la drumurile de munte, te acoperim." class="max-w-3xl mx-auto text-lg text-secondary mb-8">Drive across Romania and beyond with our fleet of rugged Dacia-style cars — reliable, spacious, and ready for any journey. From city streets to mountain roads, we’ve got you covered.</p>
         </section>
-        <!-- Value Proposition Section -->
-        <section class="mb-16 p-8 bg-card-bg rounded-3xl shadow-2xl border border-gray-700 animate-slideInUp">
-            <h3 data-en="Why Choose UINRENT?" data-ro="De ce UINRENT?" class="text-3xl font-bold text-white mb-8 border-b border-gray-700 pb-4">Why Choose UINRENT?</h3>
+        
+        <section class="mb-16 p-8 bg-card rounded-3xl shadow-2xl border border-color animate-slideInUp">
+            <h3 data-en="Why Choose UINRENT?" data-ro="De ce UINRENT?" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Why Choose UINRENT?</h3>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
                 <div class="flex flex-col items-center text-center">
                     <svg class="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h10M5 19h14a2 2 0 002-2v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7a2 2 0 002 2z"></path></svg>
-                    <p data-en="Pay on Arrival" data-ro="Plată la Sosire" class="text-sm font-semibold text-gray-300">Pay on Arrival</p>
+                    <p data-en="Pay on Arrival" data-ro="Plată la Sosire" class="text-sm font-semibold text-secondary">Pay on Arrival</p>
                 </div>
                 <div class="flex flex-col items-center text-center">
                     <svg class="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6-4h12m-6-4v-2m-6 4a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
-                    <p data-en="No Deposit" data-ro="Fără Garanție" class="text-sm font-semibold text-gray-300">No Deposit</p>
+                    <p data-en="No Deposit" data-ro="Fără Garanție" class="text-sm font-semibold text-secondary">No Deposit</p>
                 </div>
                 <div class="flex flex-col items-center text-center">
                     <svg class="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2h2m4 4h.01"></path></svg>
-                    <p data-en="Airport Pickup" data-ro="Preia de la Aeroport" class="text-sm font-semibold text-gray-300">Airport Pickup</p>
+                    <p data-en="Airport Pickup" data-ro="Preia de la Aeroport" class="text-sm font-semibold text-secondary">Airport Pickup</p>
                 </div>
                 <div class="flex flex-col items-center text-center">
                     <svg class="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10H4a2 2 0 00-2 2v4a2 2 0 002 2h10l-3 3-3-3m10 0V4a2 2 0 00-2-2H8a2 2 0 00-2 2v6l3 3 3-3"></path></svg>
-                    <p data-en="Unlimited KM" data-ro="KM Nelimitat" class="text-sm font-semibold text-gray-300">Unlimited KM</p>
+                    <p data-en="Unlimited KM" data-ro="KM Nelimitat" class="text-sm font-semibold text-secondary">Unlimited KM</p>
                 </div>
                 <div class="flex flex-col items-center text-center">
                     <svg class="w-8 h-8 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2m-4-10H5a2 2 0 00-2 2v6a2 2 0 002 2h6m-4-10v7"></path></svg>
-                    <p data-en="24/7 Support" data-ro="Suport 24/7" class="text-sm font-semibold text-gray-300">24/7 Support</p>
+                    <p data-en="24/7 Support" data-ro="Suport 24/7" class="text-sm font-semibold text-secondary">24/7 Support</p>
                 </div>
             </div>
         </section>
-        <!-- Inventory Grid Section -->
-        <section>
-            <h3 data-en="Our Fleet" data-ro="Flota Noastră" class="text-3xl font-bold text-white mb-8 border-b border-gray-700 pb-4">Our Fleet</h3>
-            <!-- Small Rental Rates Table -->
+        
+        <section id="inventory-grid" class="pt-16 -mt-16">
+            <h3 data-en="Our Fleet" data-ro="Flota Noastră" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Our Fleet</h3>
+            
             <div class="mb-8">
-                <h4 data-en="Rental Rates (per day)" data-ro="Tarife Închiriere (pe zi)" class="text-xl font-bold text-white mb-4">Rental Rates (per day)</h4>
+                <h4 data-en="Rental Rates (per day)" data-ro="Tarife Închiriere (pe zi)" class="text-xl font-bold text-main mb-4">Rental Rates (per day)</h4>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-400 rounded-xl overflow-hidden border border-gray-700">
-                        <thead class="text-xs text-white uppercase bg-gray-700">
+                    <table class="w-full text-sm text-left text-secondary rounded-xl overflow-hidden border border-color">
+                        <thead class="text-xs text-main uppercase bg-gray-700">
                             <tr>
                                 <th scope="col" class="py-3 px-6" data-en="Duration" data-ro="Durata">Duration</th>
                                 <th scope="col" class="py-3 px-6" data-en="Price / Day" data-ro="Preț / Zi">Price / Day</th>
@@ -382,23 +504,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="bg-card-bg border-b border-gray-700">
-                                <td data-en="1–3 days" data-ro="1–3 zile" class="py-3 px-6 font-medium text-white">1–3 days</td>
+                            <tr class="bg-card-bg border-b border-color">
+                                <td data-en="1–3 days" data-ro="1–3 zile" class="py-3 px-6 font-medium text-main">1–3 days</td>
                                 <td class="py-3 px-6">€49.99</td>
-                                <td data-en="Base rate" data-ro="Tarif de bază" class="py-3 px-6 text-gray-500">Base rate</td>
+                                <td data-en="Base rate" data-ro="Tarif de bază" class="py-3 px-6 text-secondary">Base rate</td>
                             </tr>
-                            <tr class="bg-card-bg border-b border-gray-700">
-                                <td data-en="4–7 days" data-ro="4–7 zile" class="py-3 px-6 font-medium text-white">4–7 days</td>
+                            <tr class="bg-card-bg border-b border-color">
+                                <td data-en="4–7 days" data-ro="4–7 zile" class="py-3 px-6 font-medium text-main">4–7 days</td>
                                 <td class="py-3 px-6 text-green-400">€34.99</td>
                                 <td data-en="30% OFF" data-ro="30% REDUCERE" class="py-3 px-6 text-primary font-bold">30% OFF</td>
                             </tr>
-                            <tr class="bg-card-bg border-b border-gray-700">
-                                <td data-en="8–14 days" data-ro="8–14 zile" class="py-3 px-6 font-medium text-white">8–14 days</td>
+                            <tr class="bg-card-bg border-b border-color">
+                                <td data-en="8–14 days" data-ro="8–14 zile" class="py-3 px-6 font-medium text-main">8–14 days</td>
                                 <td class="py-3 px-6 text-green-400">€32.99</td>
                                 <td data-en="34% OFF" data-ro="34% REDUCERE" class="py-3 px-6 text-primary font-bold">34% OFF</td>
                             </tr>
                             <tr class="bg-card-bg">
-                                <td data-en="15–30 days" data-ro="15–30 zile" class="py-3 px-6 font-medium text-white">15–30 days</td>
+                                <td data-en="15–30 days" data-ro="15–30 zile" class="py-3 px-6 font-medium text-main">15–30 days</td>
                                 <td class="py-3 px-6 text-green-400">€29.99</td>
                                 <td data-en="40% OFF" data-ro="40% REDUCERE" class="py-3 px-6 text-primary font-bold">40% OFF</td>
                             </tr>
@@ -406,145 +528,179 @@
                     </table>
                 </div>
             </div>
-            <!-- Green Table Replacement for Cash or Card on Arrival -->
+            
             <div class="mb-6 p-4 bg-green-500 text-white font-bold rounded-xl text-center">
-                <span data-en="Cash or Card on Arrival" data-ro="Plată Cash sau Card la Sosire">Cash or Card on Arrival</span>
+                <span data-en="Card payment only on arrival" data-ro="Plată doar cu cardul la sosire">Card payment only on arrival</span>
             </div>
         
-            <p class="text-lg text-gray-400 mb-6 font-medium">Showing <span id="car-count" class="text-primary font-bold">0</span> Cars</p>
-            <!-- Car Inventory Grid -->
-            <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 inventory-grid">
-                <!-- Car cards will be injected here by JavaScript -->
+            <p class="text-lg text-secondary mb-6 font-medium">Showing <span id="car-count" class="text-primary font-bold">0</span> Cars</p>
+            
+            <div id="car-inventory-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 inventory-grid">
                 <p id="loading-cars" class="text-center text-primary col-span-3 text-lg p-10">Loading fleet from database...</p>
             </div>
-            <!-- 6 Fake Feedbacks -->
-            <section class="feedback-section">
-                <h3 data-en="Customer Feedbacks" data-ro="Feedback-uri Clienți" class="text-3xl font-bold text-white mb-8 border-b border-gray-700 pb-4">Customer Feedbacks</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 1" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★★</div>
-                            <p class="text-gray-300">"Great service! The car was clean and reliable."</p>
-                            <p class="text-sm text-gray-500">John Doe - January 2025</p>
-                        </div>
-                    </div>
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 2" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★★</div>
-                            <p class="text-gray-300">"Affordable prices and easy booking process."</p>
-                            <p class="text-sm text-gray-500">Jane Smith - February 2025</p>
-                        </div>
-                    </div>
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 3" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★☆</div>
-                            <p class="text-gray-300">"Good experience, but could have more options."</p>
-                            <p class="text-sm text-gray-500">Mike Johnson - March 2025</p>
-                        </div>
-                    </div>
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 4" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★★</div>
-                            <p class="text-gray-300">"Excellent customer service and clean cars."</p>
-                            <p class="text-sm text-gray-500">Sarah Lee - April 2025</p>
-                        </div>
-                    </div>
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1611432579699-484f7990b194?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 5" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★★</div>
-                            <p class="text-gray-300">"Highly recommend for affordable rentals."</p>
-                            <p class="text-sm text-gray-500">David Kim - May 2025</p>
-                        </div>
-                    </div>
-                    <div class="feedback-card">
-                        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=80&q=80" alt="User 6" class="feedback-avatar">
-                        <div>
-                            <div class="feedback-stars">★★★★☆</div>
-                            <p class="text-gray-300">"Good value for money."</p>
-                            <p class="text-sm text-gray-500">Emily Brown - June 2025</p>
-                        </div>
+        </section>
+
+        <section id="contact-section" class="contact-section pt-16 -mt-16 mt-16">
+            <h3 data-en="Contact Us" data-ro="Contactează-ne" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Contact Us</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-3xl mx-auto">
+                <div>
+                    <h4 data-en="Opening Hours" data-ro="Program de Lucru" class="text-xl font-bold text-main mb-4">Opening Hours</h4>
+                    <div class="space-y-1 text-sm text-secondary">
+                        <p><span data-en="Mon–Fri" data-ro="Lun–Vin">Mon–Fri</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (8:00 - 20:00)</p>
+                        <p><span data-en="Saturday" data-ro="Sâmbătă">Saturday</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (10:00 - 14:00)</p>
+                        <p><span data-en="Sunday" data-ro="Duminică">Sunday</span>: <span data-en="CLOSED" data-ro="ÎNCHIS" class="text-red-400 font-semibold">CLOSED</span></p>
+                        <p data-en="If you need to return the car on Sunday call us please!" data-ro="Dacă trebuie să returnați mașina duminică, vă rugăm să ne sunați!" class="text-yellow-600 font-bold pt-2">If you need to return the car on Sunday call us please!</p>
                     </div>
                 </div>
-            </section>
-            <!-- Small Alert Table -->
-            <div class="mt-8 p-4 bg-yellow-600 text-white font-bold rounded-xl text-center">
-                <span data-en="If you need to return the car on Sunday call us please!" data-ro="Dacă trebuie să returnați mașina duminică, vă rugăm să ne sunați!">If you need to return the car on Sunday call us please!</span>
+                <div>
+                    <h4 data-en="Get in Touch" data-ro="Luați legătura" class="text-xl font-bold text-main mb-4">Get in Touch</h4>
+                
+                    <a href="mailto:uinrent@gmail.com" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        uinrent@gmail.com
+                    </a>
+                    <a href="https://maps.app.goo.gl/RWhmeanyRuqfqDeB8" target="_blank" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        uinrent
+                    </a>
+                    <a href="tel:+40764000400" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        +40 764 000 400
+                    </a>
+                    <a href="https://wa.me/40764000400" target="_blank" class="block text-sm text-secondary mt-2 hover:text-gray-300">
+                        (<span data-en="WhatsApp" data-ro="WhatsApp">WhatsApp</span> Available)
+                    </a>
+                </div>
             </div>
         </section>
-    </main>
-    <!-- Footer -->
-    <footer class="bg-card-bg mt-16 border-t border-gray-700 p-8">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-            <!-- About -->
-            <div>
-                <h4 class="text-xl font-bold text-white mb-4">UINRENT</h4>
-                <p data-en="Every journey begins with trust..." data-ro="Fiecare călătorie începe cu încredere. Oferim mașini curate, bine întreținute, prețuri transparente și suport uman real — pentru că liniștea ta este prioritatea noastră." class="text-gray-400 text-sm">Every journey begins with trust. We deliver clean, well-maintained cars, transparent pricing, and real human support — because your peace of mind is our priority.</p>
-            </div>
-        
-            <!-- Opening Hours & Payment -->
-            <div>
-                <h4 data-en="Opening Hours" data-ro="Program de Lucru" class="text-xl font-bold text-white mb-4">Opening Hours</h4>
-                <div class="space-y-1 text-sm">
-                    <p><span data-en="Mon–Fri" data-ro="Lun–Vin">Mon–Fri</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (8:00 - 20:00)</p>
-                    <p><span data-en="Saturday" data-ro="Sâmbătă">Saturday</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (10:00 - 14:00)</p>
-                    <p><span data-en="Sunday" data-ro="Duminică">Sunday</span>: <span data-en="CLOSED" data-ro="ÎNCHIS" class="text-red-400 font-semibold">CLOSED</span></p>
+
+        <section id="reviews-section" class="reviews-section pt-16 -mt-16 mt-16">
+            <h3 data-en="Reviews" data-ro="Recenzii" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Reviews</h3>
+            
+            <div class="static-rating-box max-w-md mx-auto">
+                <div class="static-rating-stars">
+                    ★★★★<span class="star-half star-empty">★</span>
+                </div>
+                <div class="static-rating-score">4.6/5</div>
+                <div class="static-rating-count">
+                    <span data-en="Based on" data-ro="Bazat pe">Based on</span> 673 
+                    <span data-en="Reviews" data-ro="Recenzii">Reviews</span>
                 </div>
             </div>
-            <!-- Contact – EMAIL & LOCATION SAME AS PHONE (clickable, minimal) -->
-            <div>
-                <h4 data-en="Contact UINRENT" data-ro="Contact UINRENT" class="text-xl font-bold text-white mb-4">Contact UINRENT</h4>
-            
-                <a href="mailto:uinrent@gmail.com" class="contact-link">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                    uinrent@gmail.com
-                </a>
-                <a href="https://maps.app.goo.gl/RWhmeanyRuqfqDeB8" target="_blank" class="contact-link">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    uinrent
-                </a>
-                <a href="tel:+40764000400" class="contact-link">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                    +40 764 000 400
-                </a>
-                <a href="https://wa.me/40764000400" target="_blank" class="block text-sm text-gray-500 mt-2 hover:text-gray-300">
-                    (<span data-en="WhatsApp" data-ro="WhatsApp">WhatsApp</span> Available)
-                </a>
-            </div>
-        </div>
-        <p class="text-center text-sm text-gray-600 mt-10">© 2025 UINRENT. All rights reserved.</p>
-    </footer>
-    <!-- Booking Modal -->
-    <div id="booking-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 invisible opacity-0 transition-opacity duration-300" onclick="if(event.target.id === 'booking-modal') closeModal()">
-        <div id="modal-content" class="bg-card-bg rounded-2xl p-6 md:p-8 max-w-4xl w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh] modal-open">
+        </section>
         
-            <div class="flex justify-between items-center border-b border-gray-700 pb-4 mb-6">
-                <h3 id="modal-car-title" class="text-2xl font-bold text-white">Book: Car Model</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-primary transition">
+        <section id="info-section" class="info-section bg-card rounded-3xl shadow-2xl border border-color p-8 mt-16 pt-16 -mt-16">
+            <h3 data-en="Information" data-ro="Informații" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Information</h3>
+            
+            <div class="accordion-container max-w-3xl mx-auto">
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="Our Features" data-ro="Ce Oferim">Our Features</span>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-en="We built our service around your convenience. Our key features include:" data-ro="Am construit serviciul nostru în jurul confortului dumneavoastră. Caracteristicile noastre cheie includ:">We built our service around your convenience. Our key features include:</p>
+                        <ul>
+                            <li><b data-en="Card Payment on Arrival" data-ro="Plată cu Cardul la Sosire">Card Payment on Arrival:</b> <span data-en="No need to pay in advance. Just book online and pay with your card at pickup." data-ro="Nu este nevoie să plătiți în avans. Rezervați online și plătiți cu cardul la ridicare.">No need to pay in advance. Just book online and pay with your card at pickup.</span></li>
+                            <li><b data-en="No Deposit Required" data-ro="Fără Garanție Necesară">No Deposit Required:</b> <span data-en="Enjoy your trip without a large deposit hold on your card." data-ro="Bucurați-vă de călătorie fără o garanție mare blocată pe card.">Enjoy your trip without a large deposit hold on your card.</span></li>
+                            <li><b data-en="Airport Pickup & Dropoff" data-ro="Preluare și Predare la Aeroport">Airport Pickup & Dropoff:</b> <span data-en="We meet you at the airport arrivals terminal, saving you time." data-ro="Vă întâmpinăm la terminalul de sosiri al aeroportului, economisind timp.">We meet you at the airport arrivals terminal, saving you time.</span></li>
+                            <li><b data-en="Unlimited Kilometers" data-ro="Kilometri Nelimitați">Unlimited Kilometers:</b> <span data-en="Drive as much as you want without worrying about extra fees." data-ro="Conduceți cât doriți fără să vă faceți griji pentru taxe suplimentare.">Drive as much as you want without worrying about extra fees.</span></li>
+                            <li><b data-en="24/7 Roadside Support" data-ro="Asistență Rutieră 24/7">24/7 Roadside Support:</b> <span data-en="Peace of mind knowing we are just a phone call away, any time of day." data-ro="Liniște sufletească știind că suntem la un apel distanță, la orice oră din zi.">Peace of mind knowing we are just a phone call away, any time of day.</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="Frequently Asked Questions (FAQ)" data-ro="Întrebări Frecvente (FAQ)">Frequently Asked Questions (FAQ)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-en="Q: What do I need to rent a car?" data-ro="Q: De ce am nevoie pentru a închiria o mașină?"><b>Q: What do I need to rent a car?</b></p>
+                        <p data-en="A: You need a valid driver's license (held for at least 1 year), a valid ID or passport, and to be at least 18 years old." data-ro="A: Aveți nevoie de un permis de conducere valabil (deținut de cel puțin 1 an), un act de identitate sau pașaport valabil și să aveți cel puțin 18 ani.">A: You need a valid driver's license (held for at least 1 year), a valid ID or passport, and to be at least 18 years old.</p>
+                        <p data-en="Q: Is a deposit required?" data-ro="Q: Este necesară o garanție?"><b>Q: Is a deposit required?</b></p>
+                        <p data-en="A: No, we offer rentals with no deposit required." data-ro="A: Nu, oferim închirieri fără a fi necesară o garanție.">A: No, we offer rentals with no deposit required.</p>
+                        <p data-en="Q: How do I pay?" data-ro="Q: Cum plătesc?"><b>Q: How do I pay?</b></p>
+                        <p data-en="A: We only accept card payment on arrival. You do not need a card to book, but you must have a valid card for payment when you pick up the car." data-ro="A: Acceptăm doar plata cu cardul la sosire. Nu aveți nevoie de card pentru a rezerva, dar trebuie să aveți un card valid pentru plată la ridicarea mașinii.">A: We only accept card payment on arrival. You do not need a card to book, but you must have a valid card for payment when you pick up the car.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="How It Works (Tutorial)" data-ro="Cum Funcționează (Tutorial)">How It Works (Tutorial)</span>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-en="Renting a car with us is simple:" data-ro="Închirierea unei mașini la noi este simplă:">Renting a car with us is simple:</p>
+                        <ul>
+                            <li data-en="1. Browse Our Fleet: Choose the car that best suits your needs from our inventory." data-ro="1. Răsfoiți Flota Noastră: Alegeți mașina care se potrivește cel mai bine nevoilor dvs. din inventarul nostru.">1. Browse Our Fleet: Choose the car that best suits your needs from our inventory.</li>
+                            <li data-en="2. Book Online: Click 'Book Now', select your pickup and return dates, and fill in your details. No card is needed to book." data-ro="2. Rezervați Online: Faceți clic pe 'Rezervă Acum', selectați datele de ridicare și returnare și completați detaliile. Nu este nevoie de card pentru rezervare.">2. Book Online: Click 'Book Now', select your pickup and return dates, and fill in your details. No card is needed to book.</li>
+                            <li data-en="3. Pick Up Your Car: Meet us at the agreed location (like the airport). We will finalize the paperwork and take the payment." data-ro="3. Ridicați Mașina: Ne întâlnim la locația stabilită (cum ar fi aeroportul). Vom finaliza documentele și vom prelua plata.">3. Pick Up Your Car: Meet us at the agreed location (like the airport). We will finalize the paperwork and take the payment.</li>
+                            <li data-en="4. Pay on Arrival: Pay securely with your card when you pick up the car. We do not accept cash." data-ro="4. Plătiți la Sosire: Plătiți în siguranță cu cardul la ridicarea mașinii. Nu acceptăm numerar.">4. Pay on Arrival: Pay securely with your card when you pick up the car. We do not accept cash.</li>
+                            <li data-en="5. Return the Car: Drop off the car at the agreed time and location. It's that easy!" data-ro="5. Returnați Mașina: Predați mașina la ora și locația stabilite. Este atât de simplu!">5. Return the Car: Drop off the car at the agreed time and location. It's that easy!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="Terms & Conditions" data-ro="Termeni și Condiții">Terms & Conditions</span>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-en="By booking a car with UINRENT, you agree to our full terms and conditions. Key terms include: Renter must be 18+ with a valid license. The vehicle must be returned in the same condition as it was received. Unlimited mileage is included. All rentals are subject to availability. Full terms will be provided with your rental agreement." data-ro="Prin rezervarea unei mașini la UINRENT, sunteți de acord cu termenii și condițiile noastre complete. Termenii cheie includ: Șoferul trebuie să aibă peste 18 ani și un permis valabil. Vehiculul trebuie returnat în aceeași stare în care a fost primit. Kilometrajul nelimitat este inclus. Toate închirierile sunt supuse disponibilității. Termenii completi vor fi furnizați împreună cu contractul de închiriere.">By booking a car with UINRENT, you agree to our full terms and conditions. Key terms include: Renter must be 18+ with a valid license. The vehicle must be returned in the same condition as it was received. Unlimited mileage is included. All rentals are subject to availability. Full terms will be provided with your rental agreement.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="Privacy Policy" data-ro="Politică de Confidențialitate">Privacy Policy</span>
+                        <span class="accordion-arrow">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <p data-en="We respect your privacy. We only collect the personal information necessary to process your booking (name, email, phone number). This information is stored securely in our Firebase database and is never shared with third parties. We use EmailJS to send booking confirmations. We do not store any payment card information." data-ro="Respectăm confidențialitatea dvs. Colectăm doar informațiile personale necesare pentru procesarea rezervării (nume, email, număr de telefon). Aceste informații sunt stocate în siguranță în baza noastră de date Firebase și nu sunt niciodată partajate cu terți. Folosim EmailJS pentru a trimite confirmările de rezervare. Nu stocăm nicio informație despre cardul de plată.">We respect your privacy. We only collect the personal information necessary to process your booking (name, email, phone number). This information is stored securely in our Firebase database and is never shared with third parties. We use EmailJS to send booking confirmations. We do not store any payment card information.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-card-bg mt-16 border-t border-color p-8">
+        <div class="max-w-6xl mx-auto text-center">
+            <h4 class="text-xl font-bold text-main mb-4">UINRENT</h4>
+            <p data-en="Every journey begins with trust..." data-ro="Fiecare călătorie începe cu încredere. Oferim mașini curate, bine întreținute, prețuri transparente și suport uman real — pentru că liniștea ta este prioritatea noastră." class="text-secondary text-sm max-w-md mx-auto">Every journey begins with trust. We deliver clean, well-maintained cars, transparent pricing, and real human support — because your peace of mind is our priority.</p>
+            <p class="text-center text-sm text-secondary mt-10">© 2025 UINRENT. All rights reserved.</p>
+            <a href="admin.html" target="_blank" class="text-primary hover:underline text-sm">Admin Panel</a>
+        </div>
+    </footer>
+    
+    <div id="booking-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 invisible opacity-0 transition-opacity duration-300" onclick="if(event.target.id === 'booking-modal') closeModal()">
+        <div id="modal-content" class="bg-card-bg rounded-2xl p-6 md:p-8 max-w-4xl w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300 overflow-y-auto max-h-[90vh] modal-open" style="background-color: var(--modal-bg);">
+        
+            <div class="flex justify-between items-center border-b border-color pb-4 mb-6">
+                <h3 id="modal-car-title" class="text-2xl font-bold text-main">Book: Car Model</h3>
+                <button onclick="closeModal()" class="text-secondary hover:text-primary transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: Car Details, Gallery, Pricing Table -->
                 <div class="lg:col-span-2">
                     <div class="car-img">
-                        <img id="main-image" src="" alt="Car Main Image" class="rounded-xl w-full h-64 object-cover mb-4 border border-gray-700">
+                        <img id="main-image" src="" alt="Car Main Image" class="rounded-xl w-full h-64 object-cover mb-4 border border-color">
                     </div>
                 
-                    <!-- Scrollable Gallery -->
                     <div id="gallery" class="flex space-x-3 overflow-x-auto pb-4 scroll-smooth">
-                        <!-- Thumbs will be injected here -->
-                    </div>
-                    <p id="car-description" class="text-gray-400 mb-6 mt-4"></p>
-                    <!-- Pricing Table -->
-                    <h4 data-en="Rental Rates (per day)" data-ro="Tarife Închiriere (pe zi)" class="text-xl font-bold text-white mb-4 mt-6">Rental Rates (per day)</h4>
+                        </div>
+                    
+                    <p id="car-description" class="text-secondary mb-6 mt-4"></p>
+                    
+                    <h4 data-en="Rental Rates (per day)" data-ro="Tarife Închiriere (pe zi)" class="text-xl font-bold text-main mb-4 mt-6">Rental Rates (per day)</h4>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-400 rounded-xl overflow-hidden border border-gray-700">
-                            <thead class="text-xs text-white uppercase bg-gray-700">
+                        <table class="w-full text-sm text-left text-secondary rounded-xl overflow-hidden border border-color">
+                            <thead class="text-xs text-main uppercase bg-gray-700">
                                 <tr>
                                     <th scope="col" class="py-3 px-6" data-en="Duration" data-ro="Durata">Duration</th>
                                     <th scope="col" class="py-3 px-6" data-en="Price / Day" data-ro="Preț / Zi">Price / Day</th>
@@ -552,122 +708,119 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="bg-card-bg border-b border-gray-700">
-                                    <td data-en="1–3 days" data-ro="1–3 zile" class="py-3 px-6 font-medium text-white">1–3 days</td>
+                                <tr class="bg-modal-bg-card border-b border-color">
+                                    <td data-en="1–3 days" data-ro="1–3 zile" class="py-3 px-6 font-medium text-main">1–3 days</td>
                                     <td class="py-3 px-6">€49.99</td>
-                                    <td data-en="Base rate" data-ro="Tarif de bază" class="py-3 px-6 text-gray-500">Base rate</td>
+                                    <td data-en="Base rate" data-ro="Tarif de bază" class="py-3 px-6 text-secondary">Base rate</td>
                                 </tr>
-                                <tr class="bg-card-bg border-b border-gray-700">
-                                    <td data-en="4–7 days" data-ro="4–7 zile" class="py-3 px-6 font-medium text-white">4–7 days</td>
+                                <tr class="bg-modal-bg-card border-b border-color">
+                                    <td data-en="4–7 days" data-ro="4–7 zile" class="py-3 px-6 font-medium text-main">4–7 days</td>
                                     <td class="py-3 px-6 text-green-400">€34.99</td>
                                     <td data-en="30% OFF" data-ro="30% REDUCERE" class="py-3 px-6 text-primary font-bold">30% OFF</td>
                                 </tr>
-                                <tr class="bg-card-bg border-b border-gray-700">
-                                    <td data-en="8–14 days" data-ro="8–14 zile" class="py-3 px-6 font-medium text-white">8–14 days</td>
+                                <tr class="bg-modal-bg-card border-b border-color">
+                                    <td data-en="8–14 days" data-ro="8–14 zile" class="py-3 px-6 font-medium text-main">8–14 days</td>
                                     <td class="py-3 px-6 text-green-400">€32.99</td>
                                     <td data-en="34% OFF" data-ro="34% REDUCERE" class="py-3 px-6 text-primary font-bold">34% OFF</td>
                                 </tr>
-                                <tr class="bg-card-bg">
-                                    <td data-en="15–30 days" data-ro="15–30 zile" class="py-3 px-6 font-medium text-white">15–30 days</td>
+                                <tr class="bg-modal-bg-card">
+                                    <td data-en="15–30 days" data-ro="15–30 zile" class="py-3 px-6 font-medium text-main">15–30 days</td>
                                     <td class="py-3 px-6 text-green-400">€29.99</td>
                                     <td data-en="40% OFF" data-ro="40% REDUCERE" class="py-3 px-6 text-primary font-bold">40% OFF</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <p data-en="*Price changes automatically in booking calculator" data-ro="*Prețul se schimbă automat în calculatorul de rezervare" class="text-xs text-gray-500 mt-2 italic">*Price changes automatically in booking calculator</p>
+                    <p data-en="*Price changes automatically in booking calculator" data-ro="*Prețul se schimbă automat în calculatorul de rezervare" class="text-xs text-secondary mt-2 italic">*Price changes automatically in booking calculator</p>
                 </div>
-                <!-- Right Column: Booking Form / Confirmation -->
-                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl shadow-inner border border-gray-700">
                 
-                    <!-- Booking Form -->
+                <div class="lg:col-span-1 bg-card rounded-xl shadow-inner border border-color p-6" style="background-color: var(--bg-card);">
+                
                     <form id="booking-form">
-                        <h4 data-en="Book Now" data-ro="Rezervă Acum" class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Book Now</h4>
+                        <h4 data-en="Book Now" data-ro="Rezervă Acum" class="text-xl font-bold text-main mb-4 border-b border-color pb-2">Book Now</h4>
                     
                         <div class="space-y-4">
-                            <!-- Dates -->
                             <div>
-                                <label for="pickup-date-modal" class="block text-sm font-medium text-gray-400 mb-1" data-en="Pickup Date" data-ro="Data Ridicare">Pickup Date</label>
-                                <input type="date" id="pickup-date-modal" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-primary focus:border-primary">
+                                <label for="pickup-date-modal" class="block text-sm font-medium text-secondary mb-1" data-en="Pickup Date" data-ro="Data Ridicare">Pickup Date</label>
+                                <input type="date" id="pickup-date-modal" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-main focus:ring-primary focus:border-primary">
                             </div>
                             <div>
-                                <label for="return-date-modal" class="block text-sm font-medium text-gray-400 mb-1" data-en="Return Date" data-ro="Data Returnare">Return Date</label>
-                                <input type="date" id="return-date-modal" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white focus:ring-primary focus:border-primary">
+                                <label for="return-date-modal" class="block text-sm font-medium text-secondary mb-1" data-en="Return Date" data-ro="Data Returnare">Return Date</label>
+                                <input type="date" id="return-date-modal" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-main focus:ring-primary focus:border-primary">
                             </div>
-                            <!-- Cost Summary -->
-                            <div class="flex justify-between items-center text-lg font-semibold border-t border-gray-700 pt-3">
-                                <span data-en="Days" data-ro="Zile" class="text-gray-400">Days:</span>
-                                <span id="display-days" class="text-white">0</span>
+                            
+                            <div class="flex justify-between items-center text-lg font-semibold border-t border-color pt-3">
+                                <span data-en="Days" data-ro="Zile" class="text-secondary">Days:</span>
+                                <span id="display-days" class="text-main">0</span>
                             </div>
-                            <!-- NEW: SUNDAY COUNT -->
                             <div class="flex justify-between items-center text-sm font-semibold">
-                                <span data-en="Sundays Included" data-ro="Duminici Incluse" class="text-gray-400">Sundays Included:</span>
-                                <span id="display-sundays" class="text-white">0</span>
+                                <span data-en="Sundays Included" data-ro="Duminici Incluse" class="text-secondary">Sundays Included:</span>
+                                <span id="display-sundays" class="text-main">0</span>
                             </div>
                             <div class="flex justify-between items-center text-xl font-extrabold pb-3">
                                 <span data-en="TOTAL" data-ro="TOTAL" class="text-primary-light">TOTAL:</span>
-                                <span id="display-cost" class="text-white">€0.00</span>
+                                <span id="display-cost" class="text-main">€0.00</span>
                             </div>
-                            <!-- Customer Info -->
-                            <h5 data-en="Your Details" data-ro="Detaliile Tale" class="text-lg font-bold text-white mb-2 pt-3 border-t border-gray-700">Your Details</h5>
+                            
+                            <h5 data-en="Your Details" data-ro="Detaliile Tale" class="text-lg font-bold text-main mb-2 pt-3 border-t border-color">Your Details</h5>
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-400 mb-1" data-en="Full Name" data-ro="Nume Complet">Full Name</label>
-                                <input type="text" id="name" name="customer_name" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white" placeholder="John Doe">
-                            </div>
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-400 mb-1" data-en="Phone Number" data-ro="Număr Telefon">Phone Number</label>
-                                <input type="tel" id="phone" name="customer_phone" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white" placeholder="+40 742 XXX XXX">
+                                <label for="name" class="block text-sm font-medium text-secondary mb-1" data-en="Full Name" data-ro="Nume Complet">Full Name</label>
+                                <input type="text" id="name" name="customer_name" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-main" placeholder="John Doe">
                             </div>
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-400 mb-1" data-en="Email" data-ro="Email">Email</label>
-                                <input type="email" id="email" name="customer_email" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white" placeholder="example@mail.com">
+                                <label for="phone" class="block text-sm font-medium text-secondary mb-1" data-en="Phone Number" data-ro="Număr Telefon">Phone Number</label>
+                                <input type="tel" id="phone" name="customer_phone" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-main" placeholder="+40 742 XXX XXX">
                             </div>
-                            <!-- Inline Error Message -->
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-secondary mb-1" data-en="Email" data-ro="Email">Email</label>
+                                <input type="email" id="email" name="customer_email" required class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-main" placeholder="example@mail.com">
+                            </div>
+                            
                             <div id="booking-error-message" class="text-red-400 font-medium text-sm mt-3 hidden text-center p-2 bg-red-900/50 rounded-lg"></div>
-                            <button type="submit" id="confirm-booking-button" class="w-full bg-primary hover:bg-primary-light text-dark-bg font-bold py-3 mt-4 rounded-xl shadow-lg transition btn-bounce">
-                                <span data-en="Confirm Booking – Pay on Arrival" data-ro="Confirmă Rezervarea – Plată la Sosire">Confirm Booking – Pay on Arrival</span>
+                            
+                            <button type="submit" id="confirm-booking-button" class="w-full bg-primary hover:bg-primary-light text-white font-bold py-3 mt-4 rounded-xl shadow-lg transition btn-bounce">
+                                <span data-en="Confirm Booking – Card payment only on arrival" data-ro="Confirmă Rezervarea – Plată doar cu cardul la sosire">Confirm Booking – Card payment only on arrival</span>
                             </button>
-                            <p data-en="No hidden fees" data-ro="Fără taxe ascunse" class="text-xs text-center text-gray-500 mt-2">No hidden fees, no credit card required to book.</p>
+                            <p data-en="No hidden fees" data-ro="Fără taxe ascunse" class="text-xs text-center text-secondary mt-2">No hidden fees, no credit card required to book.</p>
                         </div>
                     </form>
-                    <!-- Confirmation Message -->
+                    
                     <div id="confirmation-message" class="hidden text-center p-8">
                         <div id="confirmation-status-icon">
                             <svg class="w-16 h-16 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     
-                        <h4 data-en="Booking Confirmed!" data-ro="Rezervare Confirmată!" class="text-3xl font-bold text-white mb-2">Booking Confirmed!</h4>
-                        <p id="confirmation-status-message" data-en="Confirmation sent to your email" data-ro="Confirmarea a fost trimisă pe emailul tău" class="text-gray-400 mb-6">Confirmation sent to your email</p>
+                        <h4 data-en="Booking Confirmed!" data-ro="Rezervare Confirmată!" class="text-3xl font-bold text-main mb-2">Booking Confirmed!</h4>
+                        <p id="confirmation-status-message" data-en="Confirmation sent to your email" data-ro="Confirmarea a fost trimisă pe emailul tău" class="text-secondary mb-6">Confirmation sent to your email</p>
                     
-                        <h5 data-en="Your UINRENT Receipt" data-ro="Chitanța Ta UINRENT" class="text-xl font-bold text-primary mb-4 border-b border-gray-700 pb-2">Your UINRENT Receipt</h5>
+                        <h5 data-en="Your UINRENT Receipt" data-ro="Chitanța Ta UINRENT" class="text-xl font-bold text-primary mb-4 border-b border-color pb-2">Your UINRENT Receipt</h5>
                         <div class="space-y-3 text-left text-sm">
                             <div class="flex justify-between">
-                                <span data-en="Car" data-ro="Mașină" class="text-gray-400 font-medium">Car:</span>
-                                <span id="summary-car-model" class="text-white font-semibold"></span>
+                                <span data-en="Car" data-ro="Mașină" class="text-secondary font-medium">Car:</span>
+                                <span id="summary-car-model" class="text-main font-semibold"></span>
                             </div>
                             <div class="flex justify-between">
-                                <span data-en="Duration" data-ro="Durata" class="text-gray-400 font-medium">Duration:</span>
+                                <span data-en="Duration" data-ro="Durata" class="text-secondary font-medium">Duration:</span>
                                 <span><span id="summary-days"></span> <span data-en="days" data-ro="zile">days</span></span>
                             </div>
                             <div class="flex justify-between">
-                                <span data-en="Dates" data-ro="Date" class="text-gray-400 font-medium">Dates:</span>
+                                <span data-en="Dates" data-ro="Date" class="text-secondary font-medium">Dates:</span>
                                 <span id="summary-dates"></span>
                             </div>
-                            <!-- NEW: SUNDAY COUNT SUMMARY -->
                             <div class="flex justify-between">
-                                <span data-en="Sundays" data-ro="Duminici" class="text-gray-400 font-medium">Sundays:</span>
-                                <span id="summary-sundays" class="text-white font-semibold">0</span>
+                                <span data-en="Sundays" data-ro="Duminici" class="text-secondary font-medium">Sundays:</span>
+                                <span id="summary-sundays" class="text-main font-semibold">0</span>
                             </div>
-                            <div class="flex justify-between font-bold text-lg pt-2 border-t border-gray-700">
+                            <div class="flex justify-between font-bold text-lg pt-2 border-t border-color">
                                 <span data-en="TOTAL" data-ro="TOTAL">TOTAL:</span>
                                 <span id="summary-cost" class="text-primary-light"></span>
                             </div>
                             <div class="flex justify-between font-bold text-lg">
-                                <span data-en="PAY ON ARRIVAL" data-ro="PLATĂ LA SOSIRE" class="text-gray-400">PAY ON ARRIVAL</span>
+                                <span data-en="PAY ON ARRIVAL (CARD ONLY)" data-ro="PLATĂ LA SOSIRE (DOAR CARD)" class="text-secondary">PAY ON ARRIVAL (CARD ONLY)</span>
                                 <span class="text-green-400">✓</span>
                             </div>
                         </div>
-                        <button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 mt-8 rounded-xl transition btn-bounce">
+                        <button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-main font-bold py-3 mt-8 rounded-xl transition btn-bounce">
                             <span data-en="Close" data-ro="Închide">Close</span>
                         </button>
                     </div>
@@ -675,8 +828,18 @@
             </div>
         </div>
     </div>
+    
+    <div id="agreement-modal" class="invisible opacity-0">
+        <div id="agreement-modal-content" class="modal-open">
+            <h2 class="text-2xl font-bold text-main mb-4" data-en="Welcome to UINRENT" data-ro="Bun venit la UINRENT">Welcome to UINRENT</h2>
+            <p class="text-secondary mb-6" data-en="Before you continue, please take a moment to read our policies. By clicking 'I Agree', you acknowledge that you have read and understood our Terms, Privacy Policy, and Features." data-ro="Înainte de a continua, vă rugăm să acordați un moment pentru a citi politicile noastre. Făcând clic pe 'Sunt de acord', confirmați că ați citit și ați înțeles Termenii, Politica de Confidențialitate și Caracteristicile noastre.">Before you continue, please take a moment to read our policies. By clicking 'I Agree', you acknowledge that you have read and understood our Terms, Privacy Policy, and Features.</p>
+            <button id="agree-btn" class="w-full bg-primary hover:bg-primary-light text-white font-bold py-3 rounded-xl shadow-lg transition btn-bounce" onclick="closeAgreementModal()">
+                <span data-en="I Agree" data-ro="Sunt de acord">I Agree</span>
+            </button>
+        </div>
+    </div>
 
-    <!-- === REGULAR SCRIPT TAG (NO MODULE) === -->
+
     <script>
         // ===============================================
         // === 1. YOUR FIREBASE CONFIG                 ===
@@ -701,12 +864,12 @@
         // EmailJS Config
         emailjs.init("ZHSZB5oDg7Kapd3IO");
         const SERVICE_ID = "service_pw7an4g";
-        const TEMPLATE_ID_OWNER = "template_zq4renp"; // EMAIL TO YOU ONLY
+        const TEMPLATE_ID_OWNER = "template_zq4renp";
         
         const CURRENCY = '€';
         let selectedCar = null;
         let currentLang = 'en';
-        let allCars = []; // This will hold our cars from Firebase
+        let allCars = [];
 
         // ===============================================
         // === 3. CAR DATA & RENDERING                 ===
@@ -715,11 +878,11 @@
         async function fetchAndDisplayCars() {
             try {
                 const snapshot = await carsCollection.orderBy('model').get();
-                allCars = []; // Clear local cache
+                allCars = [];
                 
                 snapshot.forEach(doc => {
                     const car = doc.data();
-                    car.id = doc.id; // Assign the Firestore ID
+                    car.id = doc.id;
                     allCars.push(car);
                 });
 
@@ -727,14 +890,14 @@
 
             } catch (error) {
                 console.error("Error fetching cars: ", error);
-                document.getElementById('inventory-grid').innerHTML = 
+                document.getElementById('car-inventory-grid-container').innerHTML = 
                     `<p class="text-center text-red-400 col-span-3 text-lg p-10">Error loading fleet. Please try again later.</p>`;
             }
         }
 
         function renderCars(carList) {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = ''; // Clear the "loading" message
+            const grid = document.getElementById('car-inventory-grid-container');
+            grid.innerHTML = '';
             
             if (carList.length === 0) {
                 grid.innerHTML = 
@@ -750,7 +913,7 @@
             const badgeText = car.badge === 'new' ? (currentLang === 'ro' ? 'Nou' : 'New') : (car.badge === 'popular' ? (currentLang === 'ro' ? 'Popular' : 'Popular') : '');
         
             const badge = car.badge ? `
-                <span class="absolute top-4 right-4 badge-${car.badge} text-dark-bg text-xs font-bold px-3 py-1 rounded-full shadow-md uppercase">
+                <span class="absolute top-4 right-4 badge-${car.badge} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md uppercase">
                     ${badgeText}
                 </span>` : '';
             const pricePerDay = calculatePrice(1);
@@ -760,15 +923,15 @@
             const buttonText = currentLang === 'ro' ? 'Rezervă Acum' : 'Book Now';
             
             return `
-                <div class="car-card bg-card-bg rounded-2xl p-6 shadow-xl flex flex-col relative transform hover:scale-[1.01] transition-transform duration-200 cursor-pointer border border-gray-700 hover:border-primary" onclick="openModal('${car.id}')">
+                <div class="car-card bg-card-bg rounded-2xl p-6 shadow-xl flex flex-col relative transform hover:scale-[1.01] transition-transform duration-200 cursor-pointer border border-color hover:border-primary" onclick="openModal('${car.id}')">
                     ${badge}
                     <div class="car-img mb-4">
-                        <img src="${car.images[0]}" alt="${car.model}" onerror="this.onerror=null;this.src='https://placehold.co/400x200/1E232B/6B7280?text=Image+Unavailable'" class="rounded-xl w-full h-40 object-cover">
+                        <img src="${car.images[0]}" alt="${car.model}" onerror="this.onerror=null;this.src='https://placehold.co/400x200/F3F4F6/6B7280?text=Image+Unavailable'" class="rounded-xl w-full h-40 object-cover">
                     </div>
-                    <h4 class="text-xl font-bold text-gray-100 mb-1">${car.model}</h4>
+                    <h4 class="text-xl font-bold text-main mb-1">${car.model}</h4>
                 
-                    <div class="flex justify-between items-end mb-4 pt-2 border-t border-gray-700 mt-auto">
-                        <div class="grid grid-cols-3 gap-3 text-sm text-gray-400">
+                    <div class="flex justify-between items-end mb-4 pt-2 border-t border-color mt-auto">
+                        <div class="grid grid-cols-3 gap-3 text-sm text-secondary">
                             <div class="flex flex-col items-center">
                                 <svg class="w-5 h-5 text-primary-light mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20v-2c0-.523.109-1.037.317-1.558s.5-1.026 1.053-1.472M17 20h-2m2-12v-2m0 2h2m-2 0a3 3 0 01-3 3h-6a3 3 0 01-3-3"></path></svg>
                                 <span>${car.seats} ${seatsText}</span>
@@ -783,17 +946,16 @@
                             </div>
                         </div>
                         <p class="text-2xl font-extrabold text-primary">
-                            ${CURRENCY}${pricePerDay.toFixed(2)}<span class="text-sm text-gray-400 font-normal">${dayText}</span>
+                            ${CURRENCY}${pricePerDay.toFixed(2)}<span class="text-sm text-secondary font-normal">${dayText}</span>
                         </p>
                     </div>
                 
-                    <button class="mt-2 w-full bg-primary hover:bg-primary-light text-dark-bg font-semibold py-3 rounded-xl shadow-lg">
+                    <button class="mt-2 w-full bg-primary hover:bg-primary-light text-white font-semibold py-3 rounded-xl shadow-lg">
                         ${buttonText}
                     </button>
                 </div>`;
         }
         
-
         // ===============================================
         // === 4. BOOKING MODAL & FORM LOGIC           ===
         // ===============================================
@@ -819,7 +981,7 @@
             updateModalDescription();
             const gallery = document.getElementById('gallery');
             gallery.innerHTML = selectedCar.images.slice(1).map(img =>
-                `<img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/1E232B/6B7280?text=Thumb';" class="gallery-thumb rounded-lg object-cover w-20 h-20 border-2 border-gray-700 hover:border-primary transition cursor-pointer" onclick="document.getElementById('main-image').src=this.src">`
+                `<img src="${img}" onerror="this.onerror=null;this.src='https://placehold.co/80x80/F3F4F6/6B7280?text=Thumb';" class="gallery-thumb rounded-lg object-cover w-20 h-20 border-2 border-color hover:border-primary transition cursor-pointer" onclick="document.getElementById('main-image').src=this.src">`
             ).join('');
             updateTotalCost();
             const today = new Date().toISOString().split('T')[0];
@@ -857,13 +1019,11 @@
             const days = calculateDays(p, r);
             const pricePerDay = calculatePrice(days);
             const total = (days * pricePerDay).toFixed(2);
-            const sundays = countSundays(p, r); // <-- UPDATED
+            const sundays = countSundays(p, r);
         
             document.getElementById('display-days').textContent = days;
             document.getElementById('display-cost').textContent = `${CURRENCY}${total}`;
-            document.getElementById('display-sundays').textContent = sundays; // <-- UPDATED
-
-            // REMOVED SUNDAY ERROR
+            document.getElementById('display-sundays').textContent = sundays;
         }
 
         document.getElementById('booking-form').addEventListener('submit', async (e) => {
@@ -888,17 +1048,14 @@
                 errorMessageEl.textContent = errorText;
                 errorMessageEl.classList.remove('hidden');
                 confirmButton.disabled = false;
-                confirmButton.innerHTML = `<span data-en="Confirm Booking – Pay on Arrival" data-ro="Confirmă Rezervarea – Plată la Sosire">${translations[currentLang]["Confirm Booking – Pay on Arrival"]}</span>`;
+                confirmButton.innerHTML = `<span data-en="Confirm Booking – Card payment only on arrival" data-ro="Confirmă Rezervarea – Plată doar cu cardul la sosire">${translations[currentLang]["Confirm Booking – Card payment only on arrival"]}</span>`;
                 return;
             }
             
-            // REMOVED SUNDAY BOOKING ERROR
-
             const pricePerDay = calculatePrice(days);
             const total = (days * pricePerDay).toFixed(2);
-            const sundays = countSundays(pickup, ret); // <-- UPDATED: Count Sundays
+            const sundays = countSundays(pickup, ret);
             
-            // === NEW: Save to Firebase Rentals Collection ===
             const rentalData = {
                 carModel: selectedCar.model,
                 carId: selectedCar.id,
@@ -909,23 +1066,21 @@
                 returnDate: ret,
                 totalDays: days,
                 totalCost: total,
-                sundaysCount: sundays, // <-- UPDATED: Save Sunday count
-                rentalDate: new Date().toISOString() // Timestamp of the booking
+                sundaysCount: sundays,
+                rentalDate: new Date().toISOString()
             };
 
             try {
                 await rentalsCollection.add(rentalData);
                 console.log("Rental saved to Firebase.");
-
             } catch (error) {
                 console.error("Error saving rental to Firebase: ", error);
             }
             
-            // --- Resume original EmailJS logic ---
             document.getElementById('summary-car-model').textContent = selectedCar.model;
             document.getElementById('summary-days').textContent = days;
             document.getElementById('summary-dates').textContent = `${pickup} → ${ret}`;
-            document.getElementById('summary-sundays').textContent = sundays; // <-- UPDATED
+            document.getElementById('summary-sundays').textContent = sundays;
             document.getElementById('summary-cost').textContent = `${CURRENCY}${total}`;
             document.getElementById('booking-form').classList.add('hidden');
             document.getElementById('confirmation-message').classList.remove('hidden');
@@ -939,9 +1094,9 @@
                 pickup: pickup,
                 return: ret,
                 days: days,
-                sundays: sundays, // <-- UPDATED: Send Sunday count in email
+                sundays: sundays,
                 total: `${CURRENCY}${total}`,
-                payment: currentLang === 'ro' ? "Cash sau card la sosire" : "Cash or Card on arrival"
+                payment: currentLang === 'ro' ? "Plată doar cu cardul la sosire" : "Card payment only on arrival"
             })
             .then(() => {
                 console.log("Email sent to owner successfully!");
@@ -957,16 +1112,50 @@
                 `;
             })
             .finally(() => {
-                // Re-enable button
                 confirmButton.disabled = false;
-                confirmButton.innerHTML = `<span data-en="Confirm Booking – Pay on Arrival" data-ro="Confirmă Rezervarea – Plată la Sosire">${translations[currentLang]["Confirm Booking – Pay on Arrival"]}</span>`;
+                confirmButton.innerHTML = `<span data-en="Confirm Booking – Card payment only on arrival" data-ro="Confirmă Rezervarea – Plată doar cu cardul la sosire">${translations[currentLang]["Confirm Booking – Card paymento nly on arrival"]}</span>`;
             });
         });
 
+        // ===============================================
+        // === 5. REMOVED REVIEWS LOGIC                ===
+        // ===============================================
 
         // ===============================================
-        // === 5. LANGUAGE, UTILS, & PAGE LOAD         ===
+        // === 6. NAVIGATION & UTILITIES               ===
         // ===============================================
+
+        function toggleHamburgerMenu() {
+            const menu = document.getElementById('hamburger-menu');
+            menu.classList.toggle('open');
+        }
+        
+        // === NEW: Agreement Modal Logic ===
+        function showAgreementModal() {
+            const modal = document.getElementById('agreement-modal');
+            modal.classList.remove('invisible', 'opacity-0');
+        }
+        function closeAgreementModal() {
+            const modal = document.getElementById('agreement-modal');
+            modal.classList.add('opacity-0');
+            // Wait for transition to finish before hiding it completely
+            setTimeout(() => {
+                modal.classList.add('invisible');
+            }, 300);
+            localStorage.setItem('uinrent_agreed', 'true');
+        }
+
+        function setupAccordions() {
+            document.querySelectorAll('.accordion-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const currentlyActive = document.querySelector('.accordion-header.active');
+                    if (currentlyActive && currentlyActive !== header) {
+                        currentlyActive.classList.remove('active');
+                    }
+                    header.classList.toggle('active');
+                });
+            });
+        }
         
         const translations = {
             en: {
@@ -975,24 +1164,64 @@
                 "Every journey begins with trust...": "Every journey begins with trust. We deliver clean, well-maintained cars, transparent pricing, and real human support — because your peace of mind is our priority.",
                 "Why Choose UINRENT?": "Why Choose UINRENT?",
                 "Pay on Arrival": "Pay on Arrival", "No Deposit": "No Deposit", "Airport Pickup": "Airport Pickup", "Unlimited KM": "Unlimited KM", "24/7 Support": "24/7 Support",
-                "Our Fleet": "Our Fleet", "Showing": "Showing", "Cars": "Cars", "CASH OR CARD ON ARRIVAL": "CASH OR CARD ON ARRIVAL",
+                "Our Fleet": "Our Fleet", "Showing": "Showing", "Cars": "Cars",
                 "Opening Hours": "Opening Hours", "Mon–Fri": "Mon–Fri", "Saturday": "Saturday", "Sunday": "Sunday", "CLOSED": "CLOSED", "Open": "Open",
                 "Contact UINRENT": "Contact UINRENT", "Email": "Email", "Location": "Location", "WhatsApp": "WhatsApp",
                 "Pickup Date": "Pickup Date", "Return Date": "Return Date", "Days": "Days", "TOTAL": "TOTAL",
                 "Your Details": "Your Details", "Full Name": "Full Name", "Phone Number": "Phone Number", "Book Now": "Book Now",
-                "Confirm Booking – Pay on Arrival": "Confirm Booking – Pay on Arrival",
                 "No hidden fees": "No hidden fees, no credit card required to book.",
                 "Booking Confirmed!": "Booking Confirmed!",
                 "Confirmation sent to your email": "Confirmation sent to your email",
                 "Your UINRENT Receipt": "Your UINRENT Receipt",
-                "Car": "Car", "Duration": "Duration", "days": "days", "Dates": "Dates", "PAY ON ARRIVAL": "PAY ON ARRIVAL", "Close": "Close",
+                "Car": "Car", "Duration": "Duration", "days": "days", "Dates": "Dates", "Close": "Close",
                 "Rental Rates (per day)": "Rental Rates (per day)", "Price / Day": "Price / Day", "You Save": "You Save",
-                "1–3 days": "1–3 days", "4–7 days": "4–7 days", "8–14 days": "8–14 days", "15–30 days": "15–30 days",
+                "1–3 days": "1–3 days", "4–7 days": "4-7 days", "8–14 days": "8-14 days", "15–30 days": "15-30 days",
                 "Base rate": "Base rate", "30% OFF": "30% OFF", "34% OFF": "34% OFF", "40% OFF": "40% OFF",
                 "*Price changes automatically in booking calculator": "*Price changes automatically in booking calculator",
-                "Cash or Card on Arrival": "Cash or Card on Arrival",
                 "If you need to return the car on Sunday call us please!": "If you need to return the car on Sunday call us please!",
-                "Sundays Included": "Sundays Included", "Sundays": "Sundays"
+                "Sundays Included": "Sundays Included", "Sundays": "Sundays",
+                "CARD PAYMENT ONLY ON ARRIVAL": "CARD PAYMENT ONLY ON ARRIVAL",
+                "Card payment only on arrival": "Card payment only on arrival",
+                "Confirm Booking – Card payment only on arrival": "Confirm Booking – Card payment only on arrival",
+                "PAY ON ARRIVAL (CARD ONLY)": "PAY ON ARRIVAL (CARD ONLY)",
+                
+                "Information": "Information", "Contact Us": "Contact Us",
+                "Reviews": "Reviews",
+                "Based on": "Based on",
+                "Frequently Asked Questions (FAQ)": "Frequently Asked Questions (FAQ)",
+                "Q: What do I need to rent a car?": "Q: What do I need to rent a car?",
+                "A: You need a valid driver's license (held for at least 1 year), a valid ID or passport, and to be at least 18 years old.": "A: You need a valid driver's license (held for at least 1 year), a valid ID or passport, and to be at least 18 years old.",
+                "Q: Is a deposit required?": "Q: Is a deposit required?",
+                "A: No, we offer rentals with no deposit required.": "A: No, we offer rentals with no deposit required.",
+                "Q: How do I pay?": "Q: How do I pay?",
+                "A: We only accept card payment on arrival. You do not need a card to book, but you must have a valid card for payment when you pick up the car.": "A: We only accept card payment on arrival. You do not need a card to book, but you must have a valid card for payment when you pick up the car.",
+                "How It Works (Tutorial)": "How It Works (Tutorial)",
+                "Renting a car with us is simple:": "Renting a car with us is simple:",
+                "1. Browse Our Fleet: Choose the car that best suits your needs from our inventory.": "1. Browse Our Fleet: Choose the car that best suits your needs from our inventory.",
+                "2. Book Online: Click 'Book Now', select your pickup and return dates, and fill in your details. No card is needed to book.": "2. Book Online: Click 'Book Now', select your pickup and return dates, and fill in your details. No card is needed to book.",
+                "3. Pick Up Your Car: Meet us at the agreed location (like the airport). We will finalize the paperwork and take the payment.": "3. Pick Up Your Car: Meet us at the agreed location (like the airport). We will finalize the paperwork and take the payment.",
+                "4. Pay on Arrival: Pay securely with your card when you pick up the car. We do not accept cash.": "4. Pay on Arrival: Pay securely with your card when you pick up the car. We do not accept cash.",
+                "5. Return the Car: Drop off the car at the agreed time and location. It's that easy!": "5. Return the Car: Drop off the car at the agreed time and location. It's that easy!",
+                "Terms & Conditions": "Terms & Conditions",
+                "By booking a car with UINRENT, you agree to our full terms and conditions. Key terms include: Renter must be 18+ with a valid license. The vehicle must be returned in the same condition as it was received. Unlimited mileage is included. All rentals are subject to availability. Full terms will be provided with your rental agreement.": "By booking a car with UINRENT, you agree to our full terms and conditions. Key terms include: Renter must be 18+ with a valid license. The vehicle must be returned in the same condition as it was received. Unlimited mileage is included. All rentals are subject to availability. Full terms will be provided with your rental agreement.",
+                "Privacy Policy": "Privacy Policy",
+                "We respect your privacy. We only collect the personal information necessary to process your booking (name, email, phone number). This information is stored securely in our Firebase database and is never shared with third parties. We use EmailJS to send booking confirmations. We do not store any payment card information.": "We respect your privacy. We only collect the personal information necessary to process your booking (name, email, phone number). This information is stored securely in our Firebase database and is never shared with third parties. We use EmailJS to send booking confirmations. We do not store any payment card information.",
+                "Get in Touch": "Get in Touch",
+                "Our Features": "Our Features",
+                "We built our service around your convenience. Our key features include:": "We built our service around your convenience. Our key features include:",
+                "Card Payment on Arrival": "Card Payment on Arrival",
+                "No need to pay in advance. Just book online and pay with your card at pickup.": "No need to pay in advance. Just book online and pay with your card at pickup.",
+                "No Deposit Required": "No Deposit Required",
+                "Enjoy your trip without a large deposit hold on your card.": "Enjoy your trip without a large deposit hold on your card.",
+                "Airport Pickup & Dropoff": "Airport Pickup & Dropoff",
+                "We meet you at the airport arrivals terminal, saving you time.": "We meet you at the airport arrivals terminal, saving you time.",
+                "Unlimited Kilometers": "Unlimited Kilometers",
+                "Drive as much as you want without worrying about extra fees.": "Drive as much as you want without worrying about extra fees.",
+                "24/7 Roadside Support": "24/7 Roadside Support",
+                "Peace of mind knowing we are just a phone call away, any time of day.": "Peace of mind knowing we are just a phone call away, any time of day.",
+                "Welcome to UINRENT": "Welcome to UINRENT",
+                "Before you continue, please take a moment to read our policies. By clicking 'I Agree', you acknowledge that you have read and understood our Terms, Privacy Policy, and Features.": "Before you continue, please take a moment to read our policies. By clicking 'I Agree', you acknowledge that you have read and understood our Terms, Privacy Policy, and Features.",
+                "I Agree": "I Agree"
             },
             ro: {
                 "Affordable Freedom": "Libertate Accesibilă",
@@ -1000,24 +1229,64 @@
                 "Every journey begins with trust...": "Fiecare călătorie începe cu încredere. Oferim mașini curate, bine întreținute, prețuri transparente și suport uman real — pentru că liniștea ta este prioritatea noastră.",
                 "Why Choose UINRENT?": "De ce UINRENT?",
                 "Pay on Arrival": "Plată la Sosire", "No Deposit": "Fără Garanție", "Airport Pickup": "Preia de la Aeroport", "Unlimited KM": "KM Nelimitat", "24/7 Support": "Suport 24/7",
-                "Our Fleet": "Flota Noastră", "Showing": "Se arată", "Cars": "Mașini", "CASH OR CARD ON ARRIVAL": "PLATĂ CASH SAU CARD LA SOSIRE",
+                "Our Fleet": "Flota Noastră", "Showing": "Se arată", "Cars": "Mașini",
                 "Opening Hours": "Program de Lucru", "Mon–Fri": "Lun–Vin", "Saturday": "Sâmbătă", "Sunday": "Duminică", "CLOSED": "ÎNCHIS", "Open": "Deschis",
                 "Contact UINRENT": "Contact UINRENT", "Email": "Email", "Location": "Locație", "WhatsApp": "WhatsApp",
                 "Pickup Date": "Data Ridicare", "Return Date": "Data Returnare", "Days": "Zile", "TOTAL": "TOTAL",
                 "Your Details": "Detaliile Tale", "Full Name": "Nume Complet", "Phone Number": "Număr Telefon", "Book Now": "Rezervă Acum",
-                "Confirm Booking – Pay on Arrival": "Confirmă Rezervarea – Plată la Sosire",
                 "No hidden fees": "Fără taxe ascunse, nu este necesară cardul de credit pentru rezervare.",
                 "Booking Confirmed!": "Rezervare Confirmată!",
                 "Confirmation sent to your email": "Confirmarea a fost trimisă pe emailul tău",
                 "Your UINRENT Receipt": "Chitanța Ta UINRENT",
-                "Car": "Mașină", "Duration": "Durata", "days": "zile", "Dates": "Date", "PAY ON ARRIVAL": "PLATĂ LA SOSIRE", "Close": "Închide",
+                "Car": "Mașină", "Duration": "Durata", "days": "zile", "Dates": "Date", "Close": "Închide",
                 "Rental Rates (per day)": "Tarife Închiriere (pe zi)", "Duration": "Durata", "Price / Day": "Preț / Zi", "You Save": "Economisești",
-                "1–3 days": "1–3 zile", "4–7 days": "4–7 zile", "8–14 days": "8–14 zile", "15–30 days": "15–30 zile",
+                "1–3 days": "1–3 zile", "4–7 days": "4-7 zile", "8–14 days": "8-14 zile", "15–30 days": "15-30 zile",
                 "Base rate": "Tarif de bază", "30% OFF": "30% REDUCERE", "34% OFF": "34% REDUCERE", "40% OFF": "40% REDUCERE",
                 "*Price changes automatically in booking calculator": "*Prețul se schimbă automat în calculatorul de rezervare",
-                "Cash or Card on Arrival": "Plată Cash sau Card la Sosire",
                 "If you need to return the car on Sunday call us please!": "Dacă trebuie să returnați mașina duminică, vă rugăm să ne sunați!",
-                "Sundays Included": "Duminici Incluse", "Sundays": "Duminici"
+                "Sundays Included": "Duminici Incluse", "Sundays": "Duminici",
+                "CARD PAYMENT ONLY ON ARRIVAL": "PLATĂ DOAR CU CARDUL LA SOSIRE",
+                "Card payment only on arrival": "Plată doar cu cardul la sosire",
+                "Confirm Booking – Card payment only on arrival": "Confirmă Rezervarea – Plată doar cu cardul la sosire",
+                "PAY ON ARRIVAL (CARD ONLY)": "PLATĂ LA SOSIRE (DOAR CARD)",
+
+                "Information": "Informații", "Contact Us": "Contactează-ne",
+                "Reviews": "Recenzii",
+                "Based on": "Bazat pe",
+                "Frequently Asked Questions (FAQ)": "Întrebări Frecvente (FAQ)",
+                "Q: What do I need to rent a car?": "Q: De ce am nevoie pentru a închiria o mașină?",
+                "A: You need a valid driver's license (held for at least 1 year), a valid ID or passport, and to be at least 18 years old.": "A: Aveți nevoie de un permis de conducere valabil (deținut de cel puțin 1 an), un act de identitate sau pașaport valabil și să aveți cel puțin 18 ani.",
+                "Q: Is a deposit required?": "Q: Este necesară o garanție?",
+                "A: No, we offer rentals with no deposit required.": "A: Nu, oferim închirieri fără a fi necesară o garanție.",
+                "Q: How do I pay?": "Q: Cum plătesc?",
+                "A: We only accept card payment on arrival. You do not need a card to book, but you must have a valid card for payment when you pick up the car.": "A: Acceptăm doar plata cu cardul la sosire. Nu aveți nevoie de card pentru a rezerva, dar trebuie să aveți un card valid pentru plată la ridicarea mașinii.",
+                "How It Works (Tutorial)": "Cum Funcționează (Tutorial)",
+                "Renting a car with us is simple:": "Închirierea unei mașini la noi este simplă:",
+                "1. Browse Our Fleet: Choose the car that best suits your needs from our inventory.": "1. Răsfoiți Flota Noastră: Alegeți mașina care se potrivește cel mai bine nevoilor dvs. din inventarul nostru.",
+                "2. Book Online: Click 'Book Now', select your pickup and return dates, and fill in your details. No card is needed to book.": "2. Rezervați Online: Faceți clic pe 'Rezervă Acum', selectați datele de ridicare și returnare și completați detaliile. Nu este nevoie de card pentru rezervare.",
+                "3. Pick Up Your Car: Meet us at the agreed location (like the airport). We will finalize the paperwork and take the payment.": "3. Ridicați Mașina: Ne întâlnim la locația stabilită (cum ar fi aeroportul). Vom finaliza documentele și vom prelua plata.",
+                "4. Pay on Arrival: Pay securely with your card when you pick up the car. We do not accept cash.": "4. Plătiți la Sosire: Plătiți în siguranță cu cardul la ridicarea mașinii. Nu acceptăm numerar.",
+                "5. Return the Car: Drop off the car at the agreed time and location. It's that easy!": "5. Returnați Mașina: Predați mașina la ora și locația stabilite. Este atât de simplu!",
+                "Terms & Conditions": "Termeni și Condiții",
+                "By booking a car with UINRENT, you agree to our full terms and conditions. Key terms include: Renter must be 18+ with a valid license. The vehicle must be returned in the same condition as it was received. Unlimited mileage is included. All rentals are subject to availability. Full terms will be provided with your rental agreement.": "Prin rezervarea unei mașini la UINRENT, sunteți de acord cu termenii și condițiile noastre complete. Termenii cheie includ: Șoferul trebuie să aibă peste 18 ani și un permis valabil. Vehiculul trebuie returnat în aceeași stare în care a fost primit. Kilometrajul nelimitat este inclus. Toate închirierile sunt supuse disponibilității. Termenii completi vor fi furnizați împreună cu contractul de închiriere.",
+                "Privacy Policy": "Politică de Confidențialitate",
+                "We respect your privacy. We only collect the personal information necessary to process your booking (name, email, phone number). This information is stored securely in our Firebase database and is never shared with third parties. We use EmailJS to send booking confirmations. We do not store any payment card information.": "Respectăm confidențialitatea dvs. Colectăm doar informațiile personale necesare pentru procesarea rezervării (nume, email, număr de telefon). Aceste informații sunt stocate în siguranță în baza noastră de date Firebase și nu sunt niciodată partajate cu terți. Folosim EmailJS pentru a trimite confirmările de rezervare. Nu stocăm nicio informație despre cardul de plată.",
+                "Get in Touch": "Luați legătura",
+                "Our Features": "Ce Oferim",
+                "We built our service around your convenience. Our key features include:": "Am construit serviciul nostru în jurul confortului dumneavoastră. Caracteristicile noastre cheie includ:",
+                "Card Payment on Arrival": "Plată cu Cardul la Sosire",
+                "No need to pay in advance. Just book online and pay with your card at pickup.": "Nu este nevoie să plătiți în avans. Rezervați online și plătiți cu cardul la ridicare.",
+                "No Deposit Required": "Fără Garanție Necesară",
+                "Enjoy your trip without a large deposit hold on your card.": "Bucurați-vă de călătorie fără o garanție mare blocată pe card.",
+                "Airport Pickup & Dropoff": "Preluare și Predare la Aeroport",
+                "We meet you at the airport arrivals terminal, saving you time.": "Vă întâmpinăm la terminalul de sosiri al aeroportului, economisind timp.",
+                "Unlimited Kilometers": "Kilometri Nelimitați",
+                "Drive as much as you want without worrying about extra fees.": "Conduceți cât doriți fără să vă faceți griji pentru taxe suplimentare.",
+                "24/7 Roadside Support": "Asistență Rutieră 24/7",
+                "Peace of mind knowing we are just a phone call away, any time of day.": "Liniște sufletească știind că suntem la un apel distanță, la orice oră din zi.",
+                "Welcome to UINRENT": "Bun venit la UINRENT",
+                "Before you continue, please take a moment to read our policies. By clicking 'I Agree', you acknowledge that you have read and understood our Terms, Privacy Policy, and Features.": "Înainte de a continua, vă rugăm să acordați un moment pentru a citi politicile noastre. Făcând clic pe 'Sunt de acord', confirmați că ați citit și ați înțeles Termenii, Politica de Confidențialitate și Caracteristicile noastre.",
+                "I Agree": "Sunt de acord"
             }
         };
 
@@ -1035,35 +1304,27 @@
             if (s > e) return 0;
             const diffTime = Math.abs(e - s);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            return diffDays + 1; // Include both start and end day
+            return diffDays + 1;
         }
 
-        // NEW FUNCTION TO COUNT SUNDAYS
         function countSundays(start, end) {
             if (!start || !end) return 0;
             let count = 0;
             const s = new Date(start + 'T00:00:00');
             const e = new Date(end + 'T00:00:00');
-
             if (s > e) return 0;
-
             let current = new Date(s);
             while (current <= e) {
-                if (current.getDay() === 0) { // 0 is Sunday
-                    count++;
-                }
+                if (current.getDay() === 0) { count++; }
                 current.setDate(current.getDate() + 1);
             }
             return count;
         }
 
-        // === FIXED BUTTON STYLING LOGIC ===
-        const lightModeInactiveClasses = ['bg-gray-200', 'text-gray-700'];
-        const darkModeInactiveClasses = ['bg-gray-700', 'text-gray-300'];
-        const activeClasses = ['bg-primary', 'text-dark-bg'];
-
-        window.setLang = function(lang) { // Attach to window
+        window.setLang = function(lang) {
             currentLang = lang;
+            document.documentElement.lang = lang; 
+
             document.querySelectorAll('[data-en]').forEach(el => {
                 const key = el.dataset.en;
                 if (translations[lang] && translations[lang][key] !== undefined) {
@@ -1071,29 +1332,17 @@
                 }
             });
 
-            const isLight = document.body.classList.contains('light-mode');
-            const enBtn = document.getElementById('lang-en');
-            const roBtn = document.getElementById('lang-ro');
-            const inactiveClass = isLight ? lightModeInactiveClasses : darkModeInactiveClasses;
+            const enBtn = document.getElementById('lang-en-btn');
+            const roBtn = document.getElementById('lang-ro-btn');
             
-            const activeBtn = lang === 'en' ? enBtn : roBtn;
-            const inactiveBtn = lang === 'en' ? roBtn : enBtn;
-
-            activeBtn.classList.remove(...inactiveClass);
-            activeBtn.classList.add(...activeClasses);
-            
-            inactiveBtn.classList.remove(...activeClasses);
-            inactiveBtn.classList.add(...inactiveClass);
-
             if (lang === 'en') {
-                document.documentElement.style.setProperty('--color-primary', '#FF7F00');
-                document.documentElement.style.setProperty('--color-primary-light', '#FF9933');
-                document.querySelector('.top-banner').textContent = 'CASH OR CARD ON ARRIVAL';
+                enBtn.classList.add('active');
+                roBtn.classList.remove('active');
             } else {
-                document.documentElement.style.setProperty('--color-primary', '#007BFF');
-                document.documentElement.style.setProperty('--color-primary-light', '#339CFF');
-                document.querySelector('.top-banner').textContent = 'PLATĂ CASH SAU CARD LA SOSIRE';
+                roBtn.classList.add('active');
+                enBtn.classList.remove('active');
             }
+
             document.getElementById('name').placeholder = currentLang === 'ro' ? 'Nume Complet' : 'Full Name';
             document.getElementById('phone').placeholder = currentLang === 'ro' ? '+40 742 XXX XXX' : '+40 742 XXX XXX';
             document.getElementById('email').placeholder = currentLang === 'ro' ? 'exemplu@mail.com' : 'example@mail.com';
@@ -1106,49 +1355,28 @@
             document.getElementById('booking-error-message').classList.add('hidden');
         }
 
-        window.toggleMode = function() { // Attach to window
-            const isLight = document.body.classList.toggle('light-mode');
-            const toggleBtn = document.getElementById('toggle-mode');
-            const inactiveLangBtn = currentLang === 'en' ? document.getElementById('lang-ro') : document.getElementById('lang-en');
-            const activeLangBtn = currentLang === 'en' ? document.getElementById('lang-en') : document.getElementById('lang-ro');
-
-            if (isLight) {
-                toggleBtn.textContent = '☀️';
-                // Update inactive buttons to light mode inactive
-                toggleBtn.classList.remove(...darkModeInactiveClasses);
-                toggleBtn.classList.add(...lightModeInactiveClasses);
-                inactiveLangBtn.classList.remove(...darkModeInactiveClasses);
-                inactiveLangBtn.classList.add(...lightModeInactiveClasses);
-                // Active button text color changes
-                activeLangBtn.classList.add('text-dark-bg'); 
-            } else {
-                toggleBtn.textContent = '🌙';
-                // Update inactive buttons to dark mode inactive
-                toggleBtn.classList.remove(...lightModeInactiveClasses);
-                toggleBtn.classList.add(...darkModeInactiveClasses);
-                inactiveLangBtn.classList.remove(...lightModeInactiveClasses);
-                inactiveLangBtn.classList.add(...darkModeInactiveClasses);
-                // Active button text color changes
-                activeLangBtn.classList.add('text-dark-bg');
-            }
-        }
-
         // === PAGE LOAD ===
         window.onload = () => {
-            fetchAndDisplayCars(); // Fetch from Firebase
+            // Check for agreement
+            if (localStorage.getItem('uinrent_agreed') !== 'true') {
+                showAgreementModal();
+            }
+
+            fetchAndDisplayCars();
+            setupAccordions();
             
-            // Set initial button styles
-            document.getElementById('toggle-mode').classList.add(...darkModeInactiveClasses);
-            setLang('en'); // This will correctly style en/ro buttons on load
+            setLang('en'); // Set default language and styles
 
             document.getElementById('pickup-date-modal').addEventListener('change', updateTotalCost);
             document.getElementById('return-date-modal').addEventListener('change', updateTotalCost);
             document.getElementById('booking-modal').addEventListener('click', e => {
                 if (e.target.id === 'booking-modal') closeModal();
             });
+            
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('pickup-date-modal').min = today;
             document.getElementById('return-date-modal').min = today;
+            
             document.querySelectorAll('[data-en]').forEach(el => {
                 const key = el.dataset.en;
                 if (translations.ro[key] !== undefined) {
@@ -1156,13 +1384,12 @@
                 }
             });
             
-            // Make functions globally accessible for onclick attributes
             window.openModal = openModal;
             window.closeModal = closeModal;
-            window.toggleMode = toggleMode;
             window.setLang = setLang;
+            window.toggleHamburgerMenu = toggleHamburgerMenu;
+            window.closeAgreementModal = closeAgreementModal;
         };
     </script>
-    <a href="admin.html" target="_blank">Admin Panel</a>
 </body>
 </html>
