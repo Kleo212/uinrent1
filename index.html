@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/png" href="uinrent-favicon.png"> 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
@@ -212,7 +212,7 @@
             transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.8s ease;
         }
         
-        .reviews-section, .contact-section {
+        .reviews-section {
             padding: 2rem;
             background-color: var(--bg-card);
             border-radius: 1.5rem;
@@ -238,7 +238,6 @@
             font-size: 2.5rem;
             line-height: 1;
         }
-        /* === NEW: Half-star styling === */
         .star-half {
             display: inline-block;
             position: relative;
@@ -382,7 +381,6 @@
             padding-bottom: 1.25rem;
         }
         
-        /* === NEW: Agreement Modal Styles === */
         #agreement-modal {
             position: fixed;
             inset: 0;
@@ -409,7 +407,7 @@
             .hero-section { margin-top: 80px; padding: 1rem; }
             .inventory-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
             .car-card { margin-bottom: 2rem; }
-            .reviews-section, .contact-section, .info-section { padding: 1rem; }
+            .reviews-section, .info-section { padding: 1rem; }
             .animate-smooth { transition-duration: 0.6s; }
             .parallax-layer { opacity: 0.1; }
             .hamburger-icon { font-size: 1.8rem; }
@@ -425,7 +423,11 @@
     
     <header class="header-fixed shadow-lg z-10">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-primary">UINRENT</h1>
+            <a href="#" class="flex items-center space-x-3">
+                <img src="uinrent-logo.png" alt="UINRENT Logo" class="h-10">
+                <span class="text-3xl font-extrabold text-primary">UINRENT</span>
+            </a>
+            
             <div class="flex items-center space-x-2">
                 <button id="hamburger-btn" class="hamburger-icon focus:outline-none" onclick="toggleHamburgerMenu()">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -540,40 +542,6 @@
             </div>
         </section>
 
-        <section id="contact-section" class="contact-section pt-16 -mt-16 mt-16">
-            <h3 data-en="Contact Us" data-ro="Contactează-ne" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Contact Us</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-3xl mx-auto">
-                <div>
-                    <h4 data-en="Opening Hours" data-ro="Program de Lucru" class="text-xl font-bold text-main mb-4">Opening Hours</h4>
-                    <div class="space-y-1 text-sm text-secondary">
-                        <p><span data-en="Mon–Fri" data-ro="Lun–Vin">Mon–Fri</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (8:00 - 20:00)</p>
-                        <p><span data-en="Saturday" data-ro="Sâmbătă">Saturday</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (10:00 - 14:00)</p>
-                        <p><span data-en="Sunday" data-ro="Duminică">Sunday</span>: <span data-en="CLOSED" data-ro="ÎNCHIS" class="text-red-400 font-semibold">CLOSED</span></p>
-                        <p data-en="If you need to return the car on Sunday call us please!" data-ro="Dacă trebuie să returnați mașina duminică, vă rugăm să ne sunați!" class="text-yellow-600 font-bold pt-2">If you need to return the car on Sunday call us please!</p>
-                    </div>
-                </div>
-                <div>
-                    <h4 data-en="Get in Touch" data-ro="Luați legătura" class="text-xl font-bold text-main mb-4">Get in Touch</h4>
-                
-                    <a href="mailto:uinrent@gmail.com" class="contact-link">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        uinrent@gmail.com
-                    </a>
-                    <a href="https://maps.app.goo.gl/RWhmeanyRuqfqDeB8" target="_blank" class="contact-link">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        uinrent
-                    </a>
-                    <a href="tel:+40764000400" class="contact-link">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        +40 764 000 400
-                    </a>
-                    <a href="https://wa.me/40764000400" target="_blank" class="block text-sm text-secondary mt-2 hover:text-gray-300">
-                        (<span data-en="WhatsApp" data-ro="WhatsApp">WhatsApp</span> Available)
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <section id="reviews-section" class="reviews-section pt-16 -mt-16 mt-16">
             <h3 data-en="Reviews" data-ro="Recenzii" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Reviews</h3>
             
@@ -667,12 +635,55 @@
 
     </main>
     
-    <footer class="bg-card-bg mt-16 border-t border-color p-8">
-        <div class="max-w-6xl mx-auto text-center">
-            <h4 class="text-xl font-bold text-main mb-4">UINRENT</h4>
-            <p data-en="Every journey begins with trust..." data-ro="Fiecare călătorie începe cu încredere. Oferim mașini curate, bine întreținute, prețuri transparente și suport uman real — pentru că liniștea ta este prioritatea noastră." class="text-secondary text-sm max-w-md mx-auto">Every journey begins with trust. We deliver clean, well-maintained cars, transparent pricing, and real human support — because your peace of mind is our priority.</p>
-            <p class="text-center text-sm text-secondary mt-10">© 2025 UINRENT. All rights reserved.</p>
-            <a href="admin.html" target="_blank" class="text-primary hover:underline text-sm">Admin Panel</a>
+    <footer id="contact-section" class="bg-card-bg mt-16 border-t border-color p-8 pt-16 -mt-16">
+        <div class="max-w-6xl mx-auto">
+            
+            <h3 data-en="Contact Us" data-ro="Contactează-ne" class="text-3xl font-bold text-main mb-8 border-b border-color pb-4">Contact Us</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                
+                <div>
+                    <h4 data-en="Opening Hours" data-ro="Program de Lucru" class="text-xl font-bold text-main mb-4">Opening Hours</h4>
+                    <div class="space-y-1 text-sm text-secondary">
+                        <p><span data-en="Mon–Fri" data-ro="Lun–Vin">Mon–Fri</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (8:00 - 20:00)</p>
+                        <p><span data-en="Saturday" data-ro="Sâmbătă">Saturday</span>: <span data-en="Open" data-ro="Deschis" class="text-green-400 font-semibold">Open</span> (10:00 - 14:00)</p>
+                        <p><span data-en="Sunday" data-ro="Duminică">Sunday</span>: <span data-en="CLOSED" data-ro="ÎNCHIS" class="text-red-400 font-semibold">CLOSED</span></p>
+                        <p data-en="If you need to return the car on Sunday call us please!" data-ro="Dacă trebuie să returnați mașina duminică, vă rugăm să ne sunați!" class="text-yellow-600 font-bold pt-2">If you need to return the car on Sunday call us please!</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 data-en="Get in Touch" data-ro="Luați legătura" class="text-xl font-bold text-main mb-4">Get in Touch</h4>
+                    <a href="mailto:uinrent@gmail.com" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        uinrent@gmail.com
+                    </a>
+                    <a href="https://maps.app.goo.gl/RWhmeanyRuqfqDeB8" target="_blank" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        uinrent
+                    </a>
+                    <a href="tel:+40764000400" class="contact-link">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        +40 764 000 400
+                    </a>
+                    <a href="https://wa.me/40764000400" target="_blank" class="block text-sm text-secondary mt-2 hover:text-gray-300">
+                        (<span data-en="WhatsApp" data-ro="WhatsApp">WhatsApp</span> Available)
+                    </a>
+                </div>
+
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="uinrent-logo.png" alt="UINRENT Logo" class="h-10 mr-3">
+                        <span class="text-3xl font-extrabold text-primary">UINRENT</span>
+                    </div>
+                    <p data-en="Every journey begins with trust..." data-ro="Fiecare călătorie începe cu încredere. Oferim mașini curate, bine întreținute, prețuri transparente și suport uman real — pentru că liniștea ta este prioritatea noastră." class="text-secondary text-sm">Every journey begins with trust. We deliver clean, well-maintained cars, transparent pricing, and real human support — because your peace of mind is our priority.</p>
+                </div>
+            </div>
+
+            <div class="text-center border-t border-color mt-10 pt-8">
+                <p class="text-center text-sm text-secondary">© 2025 UINRENT. All rights reserved.</p>
+                <a href="admin.html" target="_blank" class="text-primary hover:underline text-sm">Admin Panel</a>
+            </div>
         </div>
     </footer>
     
@@ -1130,7 +1141,6 @@
             menu.classList.toggle('open');
         }
         
-        // === NEW: Agreement Modal Logic ===
         function showAgreementModal() {
             const modal = document.getElementById('agreement-modal');
             modal.classList.remove('invisible', 'opacity-0');
@@ -1138,7 +1148,6 @@
         function closeAgreementModal() {
             const modal = document.getElementById('agreement-modal');
             modal.classList.add('opacity-0');
-            // Wait for transition to finish before hiding it completely
             setTimeout(() => {
                 modal.classList.add('invisible');
             }, 300);
