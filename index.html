@@ -7,11 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="icon" type="image/png" href="favicon.png"> 
+    <link rel="icon" type="image/png" href="uinrent-favicon.png"> 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <style>
+
         :root {
             /* Primary brand colors (blue) */
             --color-primary: #3B82F6; /* Tailwind Blue 500 */
@@ -42,6 +43,96 @@
             transition: background-color 0.8s ease, color 0.8s ease;
         }
         
+/* --- 1. DESKTOP STYLES (The "Midnight Luxury" Look) --- */
+.whatsapp-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999; /* Always on top */
+    
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Space between icon and text */
+    
+    /* Size */
+    padding: 16px 32px;
+    border-radius: 50px;
+    
+    /* THE LUXURY LOOK: Dark Glass Effect */
+    background: rgba(0, 0, 0, 0.85); /* 85% Black (See-through) */
+    backdrop-filter: blur(10px); /* Blurs the website behind the button */
+    border: 1px solid rgba(0, 255, 136, 0.3); /* Subtle Neon Border */
+    
+    /* Text Styles */
+    color: #00ff88; /* Neon Green */
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase; 
+    font-size: 13px;
+    letter-spacing: 1.5px; /* Wide spacing looks expensive */
+    font-weight: 900; /* Extra Bold */
+    text-decoration: none;
+    
+    /* Glow Shadow */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(0, 255, 136, 0.1);
+    
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Ensure the SVG icon matches the text color */
+.whatsapp-btn svg {
+    fill: #00ff88;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.4s ease;
+}
+
+/* Hover Effect (Desktop) */
+.whatsapp-btn:hover {
+    background: #00ff88; /* Turns solid Neon Green */
+    color: #000; /* Text turns Black */
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.6); /* Huge Glow */
+    transform: translateY(-5px);
+}
+.whatsapp-btn:hover svg {
+    fill: #000; /* Icon turns black */
+    transform: rotate(-15deg); /* Icon tilts slightly */
+}
+
+
+/* --- 2. PHONE MODE (Responsive Design) --- */
+@media (max-width: 768px) {
+    .whatsapp-btn {
+        /* Move it closer to the corner */
+        bottom: 20px;
+        right: 15px;
+        
+        /* Make it smaller */
+        padding: 10px 18px; /* Tighter padding */
+        gap: 8px;
+        
+        /* Smaller Font */
+        font-size: 10px; /* Very small but readable */
+        letter-spacing: 1px;
+        border-width: 1px;
+    }
+    
+    .whatsapp-btn svg {
+        /* Shrink the icon */
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+/* --- 3. LOGIC TO HIDE (Keep this!) --- */
+.hide-btn {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+    pointer-events: none;
+}
+
+
+
         /* General styles using CSS variables */
         .text-main { color: var(--text-main); }
         .text-secondary { color: var(--text-secondary); }
@@ -662,13 +753,11 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         uinrent
                     </a>
-                    <a href="tel:+40764000400" class="contact-link">
+                    <a href="tel:+40762553344" class="contact-link">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                        +40 764 000 400
+                        +40 762553344
                     </a>
-                    <a href="https://wa.me/40764000400" target="_blank" class="block text-sm text-secondary mt-2 hover:text-gray-300">
-                        (<span data-en="WhatsApp" data-ro="WhatsApp">WhatsApp</span> Available)
-                    </a>
+                    
                 </div>
 
                 <div>
@@ -856,12 +945,12 @@
         // === 1. YOUR FIREBASE CONFIG                 ===
         // ===============================================
         const firebaseConfig = {
-          apiKey: "AIzaSyAQi_9PATsfdGL_StdPbtyYJPZsla5SwDY",
-          authDomain: "uin-rent-website.firebaseapp.com",
-          projectId: "uin-rent-website",
-          storageBucket: "uin-rent-website.firebasestorage.app",
-          messagingSenderId: "200564838706",
-          appId: "1:200564838706:web:e6b77a3e1c99d8d7ea472b"
+            apiKey: "AIzaSyAQi_9PATsfdGL_StdPbtyYJPZsla5SwDY",
+            authDomain: "uin-rent-website.firebaseapp.com",
+            projectId: "uin-rent-website",
+            storageBucket: "uin-rent-website.firebasestorage.app",
+            messagingSenderId: "200564838706",
+            appId: "1:200564838706:web:e6b77a3e1c99d8d7ea472b"
         };
         
         // ===============================================
@@ -978,6 +1067,11 @@
                 alert("Sorry, an error occurred. Please refresh the page.");
                 return;
             }
+
+            // --- NEW LOGIC: Hide WhatsApp Button ONLY when opening modal ---
+            const waBtn = document.getElementById("waButton");
+            if(waBtn) waBtn.classList.add("hide-btn");
+            // ---------------------------------------------------------------
         
             document.getElementById('booking-form').reset();
             document.getElementById('booking-error-message').classList.add('hidden');
@@ -1004,6 +1098,11 @@
         }
 
         function closeModal() {
+            // --- NEW LOGIC: Show WhatsApp Button again when closing modal ---
+            const waBtn = document.getElementById("waButton");
+            if(waBtn) waBtn.classList.remove("hide-btn");
+            // ----------------------------------------------------------------
+
             document.getElementById('booking-modal').classList.add('invisible', 'opacity-0');
             document.getElementById('modal-content').classList.remove('scale-100');
             document.getElementById('modal-content').classList.add('scale-95');
@@ -1124,13 +1223,9 @@
             })
             .finally(() => {
                 confirmButton.disabled = false;
-                confirmButton.innerHTML = `<span data-en="Confirm Booking – Card payment only on arrival" data-ro="Confirmă Rezervarea – Plată doar cu cardul la sosire">${translations[currentLang]["Confirm Booking – Card paymento nly on arrival"]}</span>`;
+                confirmButton.innerHTML = `<span data-en="Confirm Booking – Card payment only on arrival" data-ro="Confirmă Rezervarea – Plată doar cu cardul la sosire">${translations[currentLang]["Confirm Booking – Card payment only on arrival"]}</span>`;
             });
         });
-
-        // ===============================================
-        // === 5. REMOVED REVIEWS LOGIC                ===
-        // ===============================================
 
         // ===============================================
         // === 6. NAVIGATION & UTILITIES               ===
@@ -1400,5 +1495,12 @@
             window.closeAgreementModal = closeAgreementModal;
         };
     </script>
+
+    <a href="https://wa.me/40762553344?text=I%20want%20to%20rent%20a%20car" class="whatsapp-btn" id="waButton" target="_blank">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C5.373 0 0 5.373 0 12C0 14.084 0.536 16.04 1.473 17.756L0.073 22.994L5.429 21.595C7.056 22.487 8.936 23 10.929 23H12C18.627 23 24 17.627 24 11C24 4.373 18.627 0 12 0ZM12 21.182C10.25 21.182 8.595 20.695 7.169 19.855L6.845 19.664L3.673 20.495L4.523 17.427L4.309 17.086C3.377 15.6 2.818 13.859 2.818 12C2.818 6.936 6.936 2.818 12 2.818C17.064 2.818 21.182 6.936 21.182 12C21.182 17.064 17.064 21.182 12 21.182ZM16.759 14.705C16.5 14.577 15.227 13.955 14.991 13.868C14.755 13.782 14.582 13.741 14.409 14C14.236 14.259 13.745 14.832 13.595 15.005C13.445 15.177 13.295 15.205 13.036 15.077C12.777 14.945 11.945 14.673 10.959 13.795C10.173 13.095 9.641 12.232 9.491 11.973C9.341 11.714 9.473 11.577 9.605 11.45C9.723 11.332 9.868 11.145 10 10.991C10.132 10.836 10.177 10.723 10.264 10.55C10.35 10.377 10.309 10.223 10.245 10.095C10.182 9.968 9.659 8.682 9.441 8.159C9.227 7.65 9.009 7.718 8.845 7.718C8.691 7.718 8.518 7.714 8.345 7.714C8.173 7.714 7.891 7.777 7.655 8.036C7.418 8.295 6.755 8.918 6.755 10.186C6.755 11.455 7.677 12.682 7.814 12.864C7.95 13.045 9.645 15.659 12.236 16.777C12.85 17.041 13.332 17.195 13.709 17.314C14.282 17.5 14.809 17.473 15.232 17.409C15.7 17.341 16.677 16.818 16.882 16.245C17.086 15.673 17.086 15.191 17.023 15.077C16.959 14.964 16.795 14.832 16.536 14.705H16.759Z" fill="white"/>
+        </svg>
+        <span>WhatsApp Us</span>
+    </a>
 </body>
 </html>
