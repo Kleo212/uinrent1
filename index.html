@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en"> <head>
     <meta charset="UTF-8">
@@ -1235,6 +1234,20 @@
         function toggleHamburgerMenu() {
             const menu = document.getElementById('hamburger-menu');
             menu.classList.toggle('open');
+
+            // --- NEW LOGIC: Hide WhatsApp button when Menu is Open ---
+            const waBtn = document.getElementById("waButton");
+            if (waBtn) {
+                // If the menu just opened, HIDE the button
+                if (menu.classList.contains('open')) {
+                    waBtn.classList.add('hide-btn'); 
+                } 
+                // If the menu just closed, SHOW the button
+                else {
+                    waBtn.classList.remove('hide-btn'); 
+                }
+            }
+            // ---------------------------------------------------------
         }
         
         function showAgreementModal() {
@@ -1460,7 +1473,7 @@
             document.getElementById('booking-error-message').classList.add('hidden');
         }
 
-        // === PAGE LOAD ===-
+        // === PAGE LOAD ===
         window.onload = () => {
             // Check for agreement
             if (localStorage.getItem('uinrent_agreed') !== 'true') {
