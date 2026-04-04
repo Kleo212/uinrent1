@@ -94,38 +94,65 @@
             position: relative; overflow: hidden; padding-top: 68px;
             background: linear-gradient(155deg, #EFF6FF 0%, #DBEAFE 45%, #EFF6FF 75%, #fff 100%);
         }
-/* ── UPDATED DACIA HERO (MOBILE FRIENDLY) ── */
+/* ── FULL RUGGED DACIA HERO CODE ── */
+
 .hero-section {
-    min-height: 100vh; 
-    display: flex; 
+    min-height: 100vh;
+    display: flex;
     align-items: center;
-    position: relative; 
-    overflow: hidden; 
+    position: relative;
+    overflow: hidden;
     padding-top: 68px;
     
-    /* The Dacia Sandero link you provided */
+    /* The Dacia Sandero Image */
     background-image: 
-        linear-gradient(to bottom, rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.3)), 
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.3)), 
         url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
     
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     
-    /* Default for phones: Normal scrolling */
-    background-attachment: scroll; 
+    /* DESKTOP ONLY: The cool parallax scroll */
+    background-attachment: fixed; 
 }
 
-/* Only apply the "Fixed" effect on Desktop/Laptops */
-@media (min-width: 1024px) {
+/* ── MOBILE FIX (STOPS 200% ZOOM) ── */
+@media (max-width: 767px) {
     .hero-section {
-        background-attachment: fixed; 
+        /* Disabling 'fixed' stops the blurry zoom bug on iPhones/Androids */
+        background-attachment: scroll; 
+        
+        /* Focuses the camera on the car instead of the side of the road */
+        background-position: 65% center; 
+        
+        /* Ensures the section doesn't stretch the image too vertically */
+        min-height: 80vh; 
+    }
+    
+    .hero-h1 {
+        font-size: 2.5rem !important; /* Makes text fit better on small screens */
     }
 }
 
-/* Rest of your styles */
-.hero-grid-bg { display: none; }
-.hero-h1, .hero-sub { color: #ffffff !important; text-shadow: 0 4px 15px rgba(0,0,0,0.6); }
+/* ── CLEANUP & TEXT POP ── */
+
+/* Hide the old grid background if it's still there */
+.hero-grid-bg {
+    display: none; 
+}
+
+/* Makes your white text readable over the car image */
+.hero-h1, .hero-sub {
+    color: #ffffff !important;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    position: relative;
+    z-index: 2;
+}
+
+.hero-h1 span {
+    color: var(--color-primary); /* Keeps your branded blue color */
+}
         
         .hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
         .hero-blob-1 { width: 550px; height: 550px; background: rgba(59,130,246,.1); top: -180px; right: -180px; animation: blobdrift 13s ease-in-out infinite alternate; }
