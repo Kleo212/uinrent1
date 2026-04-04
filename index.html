@@ -110,12 +110,9 @@
     background-attachment: scroll; /* Forces it NOT to zoom on phones */
 }
 
-/* ── DESKTOP ONLY UPGRADE ── */
-@media (min-width: 1024px) {
+@media (max-width: 767px) {
     .hero-section {
-        min-height: 100vh; /* Full height for big screens */
-        background-position: center center;
-        background-attachment: fixed; /* Parallax only for computers */
+        background-attachment: scroll !important;
     }
 }
 
