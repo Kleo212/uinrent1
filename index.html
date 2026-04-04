@@ -112,26 +112,41 @@
 
 @media (max-width: 767px) {
     .hero-section {
-        /* 1. Allow the section to be as tall as the tables need */
-        height: auto !important; 
+        /* 1. Instead of stretching, we make the section fit the content */
+        height: auto !important;
         min-height: 100vh;
         display: flex;
-        flex-direction: column;
-        padding: 100px 20px 60px 20px;
-        
-        /* 2. THE SECRET: The image only covers the TOP, then fades to dark */
-        background: 
-            linear-gradient(to bottom, 
-                rgba(15, 23, 42, 0.4) 0%, 
-                rgba(15, 23, 42, 0.9) 70%, 
-                #0f172a 100%), 
-            url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
-        
-        background-size: cover;
-        background-position: 70% top; /* Keep the car at the top */
-        background-repeat: no-repeat;
-        background-attachment: scroll !important; /* NO MORE ZOOM */
+        flex-direction: column; /* Stack: Title -> Car -> Box */
+        padding: 80px 0 0 0; /* Remove side padding for the image */
+        background: #0f172a; /* Solid dark background */
     }
+
+    /* 2. They put the Car in its own 'Frame' so it never zooms */
+    .hero-car-frame {
+        width: 100%;
+        height: 250px; /* Fixed height so the car looks perfect */
+        background-image: url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
+        background-size: cover;
+        background-position: center;
+        margin-bottom: -40px; /* Pulls the booking box UP onto the car */
+        position: relative;
+        z-index: 1;
+    }
+
+    .container {
+        position: relative;
+        z-index: 2;
+        padding: 0 20px;
+    }
+
+    /* 3. The 'Find Your Car' box sits ON TOP of the car slightly */
+    .booking-widget {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        margin-top: 0;
+    }
+}
 
     /* 3. Stack the text and the 'Find Your Car' box */
     .hero-container, .container {
