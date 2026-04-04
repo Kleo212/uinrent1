@@ -112,26 +112,33 @@
 
 @media (max-width: 767px) {
     .hero-section {
-        /* 1. We make the 'window' shorter (60% of screen height) */
-        /* This prevents the 'empty space' and the 'huge zoom' */
-        height: 60vh !important; 
-        min-height: 400px !important; 
-
-        /* 2. We keep the car's proportions perfect (no stretching) */
-        background-size: cover !important;
-
-        /* 3. We slide the 'poster' to the left so the car stays centered */
-        /* Since the Dacia is on the right side of the photo, 80% is the magic number */
-        background-position: 80% center !important;
-
-        /* 4. This kills the blur/zoom bug for good */
+        /* 1. We allow the section to grow based on the content (the box) */
+        height: auto !important;
+        min-height: 100vh !important; 
+        padding-top: 100px; /* Space for your logo/nav */
+        padding-bottom: 50px;
+        
+        /* 2. Change flex to column so text is on top and box is below */
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        
+        /* 3. Car Background Fix */
         background-attachment: scroll !important;
+        background-size: cover !important;
+        background-position: 70% center !important;
     }
 
-    /* 5. We move your text slightly so it doesn't cover the car's face */
+    /* 4. Make sure the booking widget and text have space */
+    .hero-content, .booking-widget {
+        width: 95% !important;
+        margin: 10px auto !important;
+        position: relative;
+        z-index: 5;
+    }
+
     .hero-h1 {
-        font-size: 2rem !important;
-        margin-top: -20px;
+        font-size: 2.2rem !important;
+        text-align: center;
     }
 }
 
