@@ -112,43 +112,21 @@
 
 @media (max-width: 767px) {
     .hero-section {
-        /* 1. FORCE THE IMAGE TO NOT ZOOM */
-        /* We tell it: "Only be as tall as the screen, don't stretch to the moon" */
-        background-attachment: scroll !important; 
-        background-size: cover !important;
-        background-position: 80% center !important; /* Moves car into view */
-        
-        /* 2. FIX THE HEIGHT */
-        /* If the 'Find Your Car' box is disappearing, we must let the section grow */
+        /* 1. We allow the section to grow based on the content (the box) */
         height: auto !important;
-        min-height: 100vh !important;
-        display: flex !important;
-        flex-direction: column !important; /* Stacks text on top of box */
-        padding-top: 100px !important; 
-        padding-bottom: 40px !important;
+        min-height: 100vh !important; 
+        padding-top: 100px; /* Space for your logo/nav */
+        padding-bottom: 50px;
+        
+        /* 2. Change flex to column so text is on top and box is below */
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        
+        /* 3. Car Background Fix */
+        background-attachment: scroll !important;
+        background-size: cover !important;
+        background-position: 70% center !important;
     }
-
-    /* 3. FIX THE "LEFT OVER SPACE" */
-    /* Instead of empty space, we make the background a solid color 
-       that matches the car's shadows at the bottom */
-    .hero-section::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        /* This adds a dark 'fade' so the bottom of the section looks intentional */
-        background: linear-gradient(to bottom, transparent 50%, rgba(15, 23, 42, 0.9) 100%);
-        z-index: 1;
-        pointer-events: none;
-    }
-
-    .container {
-        position: relative;
-        z-index: 2; /* Keeps your text/box ABOVE the fade */
-    }
-}
 
     /* 4. Make sure the booking widget and text have space */
     .hero-content, .booking-widget {
