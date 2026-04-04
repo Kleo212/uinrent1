@@ -88,70 +88,69 @@
         .lang-btn-drawer { padding: 8px 22px; border-radius: 8px; font-size: .85rem; font-weight: 700; border: 1.5px solid var(--border-color); background: transparent; color: var(--text-secondary); transition: .2s; }
         .lang-btn-drawer.active, .lang-btn-drawer:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 
-        /* ── HERO ── */
-        .hero-section {
-            min-height: 100vh; display: flex; align-items: center;
-            position: relative; overflow: hidden; padding-top: 68px;
-            background: linear-gradient(155deg, #EFF6FF 0%, #DBEAFE 45%, #EFF6FF 75%, #fff 100%);
-        }
-/* ── FULL RUGGED DACIA HERO CODE ── */
+/* ── THE ULTIMATE HERO FIX ── */
 
 .hero-section {
+    position: relative;
     min-height: 100vh;
     display: flex;
     align-items: center;
-    position: relative;
     overflow: hidden;
-    padding-top: 68px;
-    
-    /* The Dacia Sandero Image */
+    background: #0f172a; /* Dark backup color */
+}
+
+<section class="hero-section">
+    <div class="hero-bg"></div> 
+
+    <div class="container">
+        </div>
+</section>
+
+/* This is the secret to fixing the mobile zoom */
+.hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
     background-image: 
-        linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.3)), 
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.4)), 
         url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
-    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    
-    /* DESKTOP ONLY: The cool parallax scroll */
-    background-attachment: fixed; 
 }
 
-/* ── MOBILE FIX (STOPS 200% ZOOM) ── */
+/* Desktop Parallax (Only if it doesn't break your specific phone) */
+@media (min-width: 1024px) {
+    .hero-bg {
+        background-attachment: fixed;
+    }
+}
+
+/* ── MOBILE SPECIFIC ADJUSTMENT ── */
 @media (max-width: 767px) {
-    .hero-section {
-        /* Disabling 'fixed' stops the blurry zoom bug on iPhones/Androids */
-        background-attachment: scroll; 
-        
-        /* Focuses the camera on the car instead of the side of the road */
-        background-position: 65% center; 
-        
-        /* Ensures the section doesn't stretch the image too vertically */
-        min-height: 80vh; 
+    .hero-bg {
+        background-attachment: scroll !important;
+        /* This moves the car into view on narrow screens */
+        background-position: 60% center !important; 
     }
     
-    .hero-h1 {
-        font-size: 2.5rem !important; /* Makes text fit better on small screens */
+    .hero-section {
+        min-height: 80vh; /* Shorter height = less zoom needed */
     }
 }
 
-/* ── CLEANUP & TEXT POP ── */
-
-/* Hide the old grid background if it's still there */
-.hero-grid-bg {
-    display: none; 
+/* Fix for the Text */
+.container {
+    position: relative;
+    z-index: 2; /* Puts text ABOVE the new hero-bg div */
 }
 
-/* Makes your white text readable over the car image */
 .hero-h1, .hero-sub {
     color: #ffffff !important;
-    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-    position: relative;
-    z-index: 2;
-}
-
-.hero-h1 span {
-    color: var(--color-primary); /* Keeps your branded blue color */
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
 }
         
         .hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
