@@ -112,58 +112,41 @@
 
 @media (max-width: 767px) {
     .hero-section {
-        /* 1. Instead of stretching, we make the section fit the content */
+        /* 1. FORCE THE IMAGE TO NOT ZOOM */
+        /* We tell it: "Only be as tall as the screen, don't stretch to the moon" */
+        background-attachment: scroll !important; 
+        background-size: cover !important;
+        background-position: 80% center !important; /* Moves car into view */
+        
+        /* 2. FIX THE HEIGHT */
+        /* If the 'Find Your Car' box is disappearing, we must let the section grow */
         height: auto !important;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column; /* Stack: Title -> Car -> Box */
-        padding: 80px 0 0 0; /* Remove side padding for the image */
-        background: #0f172a; /* Solid dark background */
+        min-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important; /* Stacks text on top of box */
+        padding-top: 100px !important; 
+        padding-bottom: 40px !important;
     }
 
-    /* 2. They put the Car in its own 'Frame' so it never zooms */
-    .hero-car-frame {
+    /* 3. FIX THE "LEFT OVER SPACE" */
+    /* Instead of empty space, we make the background a solid color 
+       that matches the car's shadows at the bottom */
+    .hero-section::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        height: 250px; /* Fixed height so the car looks perfect */
-        background-image: url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
-        background-size: cover;
-        background-position: center;
-        margin-bottom: -40px; /* Pulls the booking box UP onto the car */
-        position: relative;
+        height: 100%;
+        /* This adds a dark 'fade' so the bottom of the section looks intentional */
+        background: linear-gradient(to bottom, transparent 50%, rgba(15, 23, 42, 0.9) 100%);
         z-index: 1;
+        pointer-events: none;
     }
 
     .container {
         position: relative;
-        z-index: 2;
-        padding: 0 20px;
-    }
-
-    /* 3. The 'Find Your Car' box sits ON TOP of the car slightly */
-    .booking-widget {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        margin-top: 0;
-    }
-}
-
-    /* 3. Stack the text and the 'Find Your Car' box */
-    .hero-container, .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
-    }
-
-    /* 4. Make the booking box pop against the dark fade */
-    .booking-widget, .find-car-box {
-        width: 100% !important;
-        background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        padding: 20px;
-        margin-top: 10px;
+        z-index: 2; /* Keeps your text/box ABOVE the fade */
     }
 }
 
@@ -517,9 +500,6 @@
         <div>
             <div class="hero-kicker"><span class="hero-kicker-dot"></span> Available at Otopeni Airport</div>
             <h1 class="hero-h1" data-en="Affordable<br><span>Freedom</span><br>in Bucharest." data-ro="Libertate<br><span>Accesibilă</span><br>în București.">Affordable<br><span>Freedom</span><br>in Bucharest.</h1>
-         
-
-            
             <p class="hero-sub" data-en="Drive across Romania and beyond with our fleet of rugged Dacia-style cars — reliable, spacious, and ready for any journey. From city streets to mountain roads, we've got you covered." data-ro="Parcurge România și nu numai cu flota noastră de mașini Dacia robuste — fiabile, spațioase și pregătite pentru orice călătorie.">Drive across Romania and beyond with our fleet of rugged Dacia-style cars — reliable, spacious, and ready for any journey. From city streets to mountain roads, we've got you covered.</p>
             <div class="hero-actions">
                 <a href="#inventory-grid" class="btn-primary">Explore Fleet →</a>
