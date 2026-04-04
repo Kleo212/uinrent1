@@ -112,17 +112,26 @@
 
 @media (max-width: 767px) {
     .hero-section {
-        /* This stops the 200% zoom by fitting the car to the WIDTH of the phone */
-        background-size: 100% auto !important;
-        
-        /* This ensures the car stays at the top/center so it's not cut off */
-        background-position: center 20% !important;
-        
-        /* This is the final kill-switch for the 'blurry' bug */
+        /* 1. We make the 'window' shorter (60% of screen height) */
+        /* This prevents the 'empty space' and the 'huge zoom' */
+        height: 60vh !important; 
+        min-height: 400px !important; 
+
+        /* 2. We keep the car's proportions perfect (no stretching) */
+        background-size: cover !important;
+
+        /* 3. We slide the 'poster' to the left so the car stays centered */
+        /* Since the Dacia is on the right side of the photo, 80% is the magic number */
+        background-position: 80% center !important;
+
+        /* 4. This kills the blur/zoom bug for good */
         background-attachment: scroll !important;
-        
-        /* Optional: Makes the header a bit shorter so the car isn't stretched thin */
-        min-height: 60vh !important;
+    }
+
+    /* 5. We move your text slightly so it doesn't cover the car's face */
+    .hero-h1 {
+        font-size: 2rem !important;
+        margin-top: -20px;
     }
 }
 
