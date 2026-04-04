@@ -88,69 +88,49 @@
         .lang-btn-drawer { padding: 8px 22px; border-radius: 8px; font-size: .85rem; font-weight: 700; border: 1.5px solid var(--border-color); background: transparent; color: var(--text-secondary); transition: .2s; }
         .lang-btn-drawer.active, .lang-btn-drawer:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 
-/* ── THE ULTIMATE HERO FIX ── */
+/* ── THE "NO-FAIL" HERO CODE ── */
 
 .hero-section {
     position: relative;
-    min-height: 100vh;
+    min-height: 80vh; /* Shorter for mobile to prevent zoom */
     display: flex;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
-    background: #0f172a; /* Dark backup color */
-}
+    padding-top: 80px;
 
-<section class="hero-section">
-    <div class="hero-bg"></div> 
-
-    <div class="container">
-        </div>
-</section>
-
-/* This is the secret to fixing the mobile zoom */
-.hero-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    background-image: 
+    /* The Image - We set it to SCROLL by default for phones */
+    background: 
         linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.4)), 
         url('https://assets.adac.de/image/upload/v1/Autodatenbank/Fahrzeugbilder/im06227-1-dacia-sandero.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-/* Desktop Parallax (Only if it doesn't break your specific phone) */
-@media (min-width: 1024px) {
-    .hero-bg {
-        background-attachment: fixed;
-    }
-}
-
-/* ── MOBILE SPECIFIC ADJUSTMENT ── */
-@media (max-width: 767px) {
-    .hero-bg {
-        background-attachment: scroll !important;
-        /* This moves the car into view on narrow screens */
-        background-position: 60% center !important; 
-    }
     
+    background-size: cover;
+    background-position: 65% center; /* This centers the car on narrow phone screens */
+    background-repeat: no-repeat;
+    background-attachment: scroll; /* Forces it NOT to zoom on phones */
+}
+
+/* ── DESKTOP ONLY UPGRADE ── */
+@media (min-width: 1024px) {
     .hero-section {
-        min-height: 80vh; /* Shorter height = less zoom needed */
+        min-height: 100vh; /* Full height for big screens */
+        background-position: center center;
+        background-attachment: fixed; /* Parallax only for computers */
     }
 }
 
-/* Fix for the Text */
-.container {
-    position: relative;
-    z-index: 2; /* Puts text ABOVE the new hero-bg div */
-}
-
+/* ── TEXT PROTECTION ── */
 .hero-h1, .hero-sub {
     color: #ffffff !important;
-    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9);
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    width: 100%;
+}
+
+.hero-grid-bg {
+    display: none; /* Make sure the old grid isn't blocking the photo */
 }
         
         .hero-blob { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
