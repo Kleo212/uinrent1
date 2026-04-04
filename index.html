@@ -112,7 +112,17 @@
 
 @media (max-width: 767px) {
     .hero-section {
+        /* This stops the 200% zoom by fitting the car to the WIDTH of the phone */
+        background-size: 100% auto !important;
+        
+        /* This ensures the car stays at the top/center so it's not cut off */
+        background-position: center 20% !important;
+        
+        /* This is the final kill-switch for the 'blurry' bug */
         background-attachment: scroll !important;
+        
+        /* Optional: Makes the header a bit shorter so the car isn't stretched thin */
+        min-height: 60vh !important;
     }
 }
 
