@@ -1,734 +1,1329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UINRENT – Admin Panel (Firebase)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script> 
-    <style>
-        :root {
-            --primary: #FF7F00;
-            --primary-light: #FF9933;
-            --card-bg: #1F2937; /* Gray-800 equivalent */
-            --dark-bg: #111827; /* Gray-900 equivalent */
-        }
-        body {font-family:'Inter',sans-serif;background:var(--dark-bg);color:#f3f4f6;}
-        .btn-primary{background:var(--primary);color:#111827;font-weight:600;transition:transform .1s;}
-        .btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);}
-        .card{background:var(--card-bg);border:1px solid #374151;box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);}
-        .input{border:1px solid #4b5563;background:#1F2937;color:#fff;}
-        .input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 2px rgba(255, 127, 0, 0.5);}
-        .badge-new{background:#047857;color:#fff;} /* Green */
-        .badge-popular{background:#DC2626;color:#fff;} /* Red */
-        .modal-content{max-height:90vh;overflow-y:auto;}
-        .hidden{display:none !important;}
-        .animate-fade{animation:fadeIn .4s ease forwards;}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UINRENT · Control Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="favicon.png">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<style>
+:root{
+  --bg:#080B12; --surface:#111827; --surface-2:#1A2233; --surface-3:#222C3F;
+  --line:#26314A; --line-soft:#1C2437;
+  --accent:#FF8A1F; --accent-dim:rgba(255,138,31,.14); --accent-glow:rgba(255,138,31,.35);
+  --blue:#4499EE; --blue-dim:rgba(68,153,238,.14);
+  --ok:#22C55E; --ok-dim:rgba(34,197,94,.14);
+  --warn:#F59E0B; --warn-dim:rgba(245,158,11,.15);
+  --danger:#F04438; --danger-dim:rgba(240,68,56,.14);
+  --text:#E9EEF7; --muted:#8B98AE; --faint:#5D6B82;
+  --r-sm:10px; --r:14px; --r-lg:20px; --r-xl:26px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --shadow:0 20px 45px -20px rgba(0,0,0,.85);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(720px 420px at 12% -8%,rgba(255,138,31,.10),transparent 62%),
+             radial-gradient(680px 420px at 92% 4%,rgba(68,153,238,.09),transparent 62%)}
+button,input,select,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:inherit;text-decoration:none}
+.hidden{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:99px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#33405C}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
 
-        /* === NEW CSS FOR UPLOADS === */
-        .preview-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid var(--primary);
-            margin: 4px;
-            position: relative;
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background: #4b5563;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--primary);
-            transition: width .3s;
-        }
-        #save-button .fa-spinner {
-            display: none; /* Hide spinner by default */
-        }
-        #save-button:disabled .fa-spinner {
-            display: inline-block; /* Show when button is disabled */
-        }
-        #save-button:disabled .save-text {
-            display: none; /* Hide 'Save' text when disabled */
-        }
-        
-        /* === NEW: Password Eye Icon === */
-        .password-wrapper {
-            position: relative;
-        }
-        #toggle-password {
-            position: absolute;
-            top: 50%;
-            right: 0.75rem; /* 12px */
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #9CA3AF; /* gray-400 */
-        }
-        #toggle-password:hover {
-            color: #fff;
-        }
-    </style>
+/* ══ LOGIN ══ */
+#login-screen{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{width:100%;max-width:410px;background:linear-gradient(180deg,rgba(26,34,51,.96),rgba(17,24,39,.96));
+  border:1px solid var(--line);border-radius:var(--r-xl);padding:38px 34px;box-shadow:var(--shadow);
+  animation:riseIn .7s var(--ease) both}
+@keyframes riseIn{from{opacity:0;transform:translateY(26px) scale(.97)}to{opacity:1;transform:none}}
+.login-mark{width:56px;height:56px;border-radius:16px;background:linear-gradient(140deg,var(--accent),#FFB65C);
+  display:flex;align-items:center;justify-content:center;color:#140B02;font-size:1.4rem;margin:0 auto 18px;
+  box-shadow:0 12px 30px -10px var(--accent-glow)}
+.login-title{font-size:1.7rem;font-weight:900;text-align:center;letter-spacing:-.9px}
+.login-sub{text-align:center;color:var(--muted);font-size:.84rem;margin-top:6px;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.66rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.input{width:100%;padding:12px 14px;border-radius:var(--r-sm);background:var(--bg);border:1.5px solid var(--line);
+  color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+.input:focus{border-color:var(--accent);background:#0B1020;box-shadow:0 0 0 3px var(--accent-dim)}
+.input::placeholder{color:#4E5A70}
+select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B98AE' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+textarea.input{resize:vertical;min-height:82px;line-height:1.55}
+.pw-wrap{position:relative}
+.pw-wrap .input{padding-right:42px}
+#toggle-password{position:absolute;top:50%;right:13px;transform:translateY(-50%);cursor:pointer;color:var(--muted);transition:color .2s}
+#toggle-password:hover{color:var(--text)}
+.err-msg{background:var(--danger-dim);border:1px solid rgba(240,68,56,.35);color:#FF9A92;border-radius:var(--r-sm);
+  padding:10px 13px;font-size:.8rem;font-weight:600;margin-top:14px;text-align:center}
+
+/* ══ BUTTONS ══ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:var(--r-sm);
+  font-size:.84rem;font-weight:700;letter-spacing:.01em;transition:transform .2s var(--ease),background .2s,box-shadow .2s,border-color .2s,color .2s;
+  border:1.5px solid transparent;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-primary{background:linear-gradient(135deg,#FF8A1F,#FFA451);color:#170C01;box-shadow:0 10px 26px -12px var(--accent-glow)}
+.btn-primary:hover{box-shadow:0 16px 34px -12px var(--accent-glow)}
+.btn-blue{background:linear-gradient(135deg,#4499EE,#68B0F5);color:#04101F;box-shadow:0 10px 26px -12px rgba(68,153,238,.45)}
+.btn-ghost{background:var(--surface-2);border-color:var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:var(--surface-3)}
+.btn-danger{background:var(--danger-dim);border-color:rgba(240,68,56,.4);color:#FF8B82}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-ok{background:var(--ok-dim);border-color:rgba(34,197,94,.4);color:#5EE08D}
+.btn-ok:hover{background:var(--ok);color:#04140A;border-color:var(--ok)}
+.btn-sm{padding:7px 12px;font-size:.75rem;border-radius:9px}
+.btn-block{width:100%}
+.icon-btn{width:38px;height:38px;border-radius:11px;background:var(--surface-2);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.22s var(--ease)}
+.icon-btn:hover{color:var(--text);border-color:var(--accent);transform:translateY(-2px)}
+.icon-btn.danger:hover{border-color:var(--danger);color:#FF8B82}
+
+/* ══ SHELL ══ */
+#app{position:relative;z-index:1;display:none}
+#app.on{display:block}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:248px;background:rgba(11,15,24,.9);backdrop-filter:blur(18px);
+  border-right:1px solid var(--line-soft);padding:22px 16px;display:flex;flex-direction:column;z-index:60;
+  transition:transform .45s var(--ease)}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px;margin-bottom:14px;border-bottom:1px solid var(--line-soft)}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,var(--accent),#FFB65C);
+  display:flex;align-items:center;justify-content:center;color:#170C01;font-size:.95rem;flex-shrink:0;
+  box-shadow:0 8px 20px -8px var(--accent-glow)}
+.brand-name{font-size:1.02rem;font-weight:900;letter-spacing:-.4px;line-height:1}
+.brand-sub{font-size:.56rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.nav-label{font-size:.58rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);padding:14px 10px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:11px;
+  font-size:.87rem;font-weight:600;color:var(--muted);margin-bottom:3px;position:relative;
+  transition:background .22s,color .22s,transform .22s var(--ease)}
+.nav-item i{width:19px;text-align:center;font-size:.9rem;transition:color .22s,transform .3s var(--ease)}
+.nav-item:hover{background:var(--surface-2);color:var(--text);transform:translateX(3px)}
+.nav-item.active{background:linear-gradient(90deg,var(--accent-dim),transparent);color:var(--accent)}
+.nav-item.active i{color:var(--accent);transform:scale(1.12)}
+.nav-item.active::before{content:'';position:absolute;left:-16px;top:50%;transform:translateY(-50%);
+  width:3px;height:22px;border-radius:0 4px 4px 0;background:var(--accent);box-shadow:0 0 14px var(--accent-glow)}
+.nav-pill{margin-left:auto;background:var(--surface-3);color:var(--muted);font-size:.62rem;font-weight:800;
+  padding:2px 8px;border-radius:99px;min-width:22px;text-align:center}
+.nav-item.active .nav-pill{background:var(--accent);color:#170C01}
+.sidebar-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--line-soft)}
+.who{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;background:var(--surface);margin-bottom:9px}
+.who-dot{width:30px;height:30px;border-radius:9px;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.75rem;flex-shrink:0}
+.who-mail{font-size:.72rem;font-weight:600;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scrim{position:fixed;inset:0;background:rgba(4,6,12,.7);backdrop-filter:blur(3px);z-index:55;opacity:0;visibility:hidden;transition:.35s}
+.scrim.on{opacity:1;visibility:visible}
+
+.main{margin-left:248px;padding:24px 30px 60px;min-height:100vh}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+.burger{display:none}
+.page-h{flex:1;min-width:200px}
+.page-title{font-size:1.7rem;font-weight:900;letter-spacing:-1px;line-height:1.1}
+.page-sub{font-size:.83rem;color:var(--muted);margin-top:4px}
+.live-chip{display:inline-flex;align-items:center;gap:7px;background:var(--ok-dim);border:1px solid rgba(34,197,94,.3);
+  color:#5EE08D;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 13px;border-radius:99px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);animation:blip 2s infinite}
+@keyframes blip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
+
+@media (max-width:1000px){
+  .sidebar{transform:translateX(-100%);box-shadow:22px 0 50px rgba(0,0,0,.6)}
+  .sidebar.open{transform:none}
+  .main{margin-left:0;padding:18px 16px 60px}
+  .burger{display:flex}
+  .page-title{font-size:1.35rem}
+}
+
+/* ══ VIEWS ══ */
+.view{display:none}
+.view.on{display:block;animation:viewIn .5s var(--ease) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ══ CARD / PANEL ══ */
+.panel{background:linear-gradient(180deg,rgba(26,34,51,.7),rgba(17,24,39,.7));border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow)}
+.panel+.panel{margin-top:20px}
+.panel-h{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.panel-t{font-size:1.02rem;font-weight:800;letter-spacing:-.3px}
+.panel-d{font-size:.78rem;color:var(--muted);margin-top:3px}
+.panel-tools{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ══ STATS ══ */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:14px;margin-bottom:20px}
+.stat{position:relative;overflow:hidden;background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;
+  transition:transform .3s var(--ease),border-color .3s,box-shadow .3s}
+.stat:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 22px 40px -22px var(--accent-glow)}
+.stat::after{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+  background:var(--accent-dim);filter:blur(28px);opacity:.75;transition:opacity .3s}
+.stat:hover::after{opacity:1}
+.stat.b::after{background:var(--blue-dim)} .stat.g::after{background:var(--ok-dim)} .stat.r::after{background:var(--danger-dim)}
+.stat-ico{width:38px;height:38px;border-radius:11px;background:var(--surface-3);display:flex;align-items:center;
+  justify-content:center;color:var(--accent);font-size:.92rem;margin-bottom:14px;position:relative;z-index:1}
+.stat.b .stat-ico{color:var(--blue)} .stat.g .stat-ico{color:var(--ok)} .stat.r .stat-ico{color:#FF8B82}
+.stat-v{font-size:2.05rem;font-weight:900;letter-spacing:-1.4px;line-height:1;position:relative;z-index:1}
+.stat-l{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:8px;position:relative;z-index:1}
+
+/* ══ TABLE ══ */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--line-soft)}
+table{width:100%;border-collapse:collapse;min-width:640px}
+thead th{background:var(--surface);padding:11px 14px;text-align:left;font-size:.62rem;font-weight:800;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody td{padding:13px 14px;font-size:.84rem;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:rgba(68,153,238,.05)}
+tbody tr:last-child td{border-bottom:none}
+.t-strong{font-weight:700;color:var(--text)}
+.t-mut{color:var(--muted);font-size:.78rem}
+.t-money{font-weight:800;color:#5EE08D;font-variant-numeric:tabular-nums}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.thumb{width:64px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.empty{text-align:center;padding:44px 20px;color:var(--faint)}
+.empty i{font-size:1.9rem;margin-bottom:12px;display:block;opacity:.5}
+.empty p{font-size:.86rem;font-weight:600;color:var(--muted)}
+.empty span{font-size:.76rem;display:block;margin-top:5px}
+
+/* ══ TAGS ══ */
+.tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:.64rem;
+  font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.tag-new{background:var(--ok-dim);color:#5EE08D} .tag-popular{background:var(--danger-dim);color:#FF8B82}
+.tag-none{background:var(--surface-3);color:var(--faint)}
+.tag-pending{background:var(--warn-dim);color:#FBBF4B}
+.tag-confirmed{background:var(--ok-dim);color:#5EE08D}
+.tag-cancelled{background:var(--danger-dim);color:#FF8B82}
+.tag-blue{background:var(--blue-dim);color:#7FBDF7}
+
+/* ══ CALENDAR ══ */
+.cal-layout{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:1120px){.cal-layout{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+.cal-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cal-mon{font-size:1.12rem;font-weight:800;letter-spacing:-.4px;text-transform:capitalize;min-width:180px;text-align:center}
+.dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.dow-row span{text-align:center;font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:5px 0}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{position:relative;aspect-ratio:1/1;border-radius:11px;background:var(--surface);border:1.5px solid var(--line-soft);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;
+  color:var(--text);transition:transform .18s var(--ease),background .2s,border-color .2s,color .2s}
+.day:hover:not(.void):not(.gone){transform:translateY(-3px) scale(1.04);border-color:var(--accent);color:var(--accent);z-index:2}
+.day.void{background:transparent;border-color:transparent;pointer-events:none}
+.day.gone{color:#3B4557;background:transparent;border-color:transparent;cursor:not-allowed}
+.day.booked{background:var(--warn-dim);border-color:rgba(245,158,11,.45);color:#FBBF4B}
+.day.blocked{background:rgba(240,68,56,.18);border-color:rgba(240,68,56,.5);color:#FF8B82}
+.day.blocked::after{content:'';position:absolute;left:18%;right:18%;top:50%;height:2px;background:rgba(240,68,56,.65);transform:rotate(-16deg)}
+.day.inr{background:var(--blue-dim);border-color:rgba(68,153,238,.4);color:#8CC4F8}
+.day.pick{background:linear-gradient(135deg,var(--accent),#FFA451);border-color:var(--accent);color:#170C01;
+  box-shadow:0 10px 22px -10px var(--accent-glow);transform:scale(1.05)}
+.day-mark{position:absolute;bottom:6px;width:5px;height:5px;border-radius:50%}
+.day.booked .day-mark{background:var(--warn)} .day.blocked .day-mark{background:var(--danger)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-soft)}
+.lg{display:flex;align-items:center;gap:7px;font-size:.72rem;font-weight:600;color:var(--muted)}
+.lg i{width:13px;height:13px;border-radius:4px;display:block}
+.lg.free i{background:var(--surface);border:1.5px solid var(--line)}
+.lg.book i{background:var(--warn-dim);border:1.5px solid rgba(245,158,11,.5)}
+.lg.blk i{background:rgba(240,68,56,.2);border:1.5px solid rgba(240,68,56,.55)}
+.lg.sel i{background:var(--accent)}
+
+.range-strip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--r);padding:12px 15px;margin-bottom:14px;flex-wrap:wrap}
+.range-strip.armed{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.rs-box{flex:1;min-width:110px}
+.rs-l{font-size:.58rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+.rs-v{font-size:.9rem;font-weight:800;margin-top:3px}
+.rs-v.none{color:var(--faint);font-weight:600}
+
+.blk-item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:var(--r);padding:12px 14px;margin-bottom:9px;transition:border-color .22s,transform .22s var(--ease)}
+.blk-item:hover{border-color:var(--danger);transform:translateX(3px)}
+.blk-bar{width:4px;align-self:stretch;border-radius:99px;background:var(--danger);flex-shrink:0}
+.blk-bar.auto{background:var(--warn)}
+.blk-main{flex:1;min-width:0}
+.blk-date{font-size:.86rem;font-weight:800}
+.blk-note{font-size:.73rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+
+/* ══ CAR PICKER ══ */
+.car-strip{display:flex;gap:9px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px}
+.car-chip{display:flex;align-items:center;gap:9px;padding:8px 15px 8px 8px;border-radius:99px;background:var(--surface);
+  border:1.5px solid var(--line);font-size:.8rem;font-weight:700;color:var(--muted);white-space:nowrap;
+  transition:.24s var(--ease);flex-shrink:0}
+.car-chip img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--line)}
+.car-chip:hover{border-color:var(--accent);color:var(--text);transform:translateY(-2px)}
+.car-chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+
+/* ══ PRICING ══ */
+.tier-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px}
+.tier-in{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r);padding:14px;transition:border-color .22s}
+.tier-in:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.tier-in label{display:block;font-size:.62rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.tier-money{display:flex;align-items:center;gap:6px}
+.tier-money span{font-size:1.1rem;font-weight:800;color:var(--faint)}
+.tier-money input{width:100%;background:none;border:none;outline:none;font-size:1.5rem;font-weight:900;
+  letter-spacing:-1px;color:var(--text);font-variant-numeric:tabular-nums}
+.tier-money input::-webkit-outer-spin-button,.tier-money input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.tier-money input[type=number]{-moz-appearance:textfield}
+
+.calc-shell{background:linear-gradient(150deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.calc-days{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.calc-days input{flex:1;text-align:center;font-size:1.35rem;font-weight:900;padding:11px;border-radius:var(--r-sm);
+  background:var(--bg);border:1.5px solid var(--line);outline:none;font-variant-numeric:tabular-nums}
+.calc-days input:focus{border-color:var(--accent)}
+.calc-step{width:42px;height:44px;border-radius:var(--r-sm);background:var(--surface-3);border:1.5px solid var(--line);
+  font-size:1.2rem;font-weight:800;color:var(--muted);transition:.22s}
+.calc-step:hover{border-color:var(--accent);color:var(--accent)}
+.calc-out{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.calc-line{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:.85rem}
+.calc-line span:first-child{color:var(--muted)}
+.calc-line span:last-child{font-weight:800;font-variant-numeric:tabular-nums}
+.calc-tot{border-top:1px solid var(--line);margin-top:8px;padding-top:13px}
+.calc-tot span:first-child{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.calc-tot span:last-child{font-size:1.75rem;font-weight:900;letter-spacing:-1.1px}
+.rate-tbl tr.hot{background:var(--accent-dim)}
+.rate-tbl tr.hot td{color:var(--accent);font-weight:800}
+
+/* ══ MODALS ══ */
+.overlay{position:fixed;inset:0;z-index:90;background:rgba(4,6,12,.8);backdrop-filter:blur(9px);
+  display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.overlay.on{opacity:1;visibility:visible}
+.sheet{width:100%;max-width:860px;max-height:92vh;overflow-y:auto;background:linear-gradient(180deg,#1B2437,#121A29);
+  border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
+  transform:translateY(24px) scale(.97);transition:transform .42s var(--ease)}
+.overlay.on .sheet{transform:none}
+.sheet-sm{max-width:430px}
+.sheet-h{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:14px;padding:20px 24px;
+  background:rgba(27,36,55,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);border-radius:var(--r-xl) var(--r-xl) 0 0}
+.sheet-t{font-size:1.15rem;font-weight:800;letter-spacing:-.4px;flex:1}
+.sheet-b{padding:22px 24px}
+.sheet-f{position:sticky;bottom:0;display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;
+  background:rgba(18,26,41,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line);flex-wrap:wrap}
+fieldset{border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:16px}
+legend{font-size:.66rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);padding:0 8px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:13px}
+
+.shots{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+.shot{position:relative;width:88px;height:66px;border-radius:11px;overflow:hidden;border:2px solid var(--line)}
+.shot img{width:100%;height:100%;object-fit:cover}
+.shot.lead{border-color:var(--accent)}
+.shot-tag{position:absolute;left:0;right:0;bottom:0;background:var(--accent);color:#170C01;font-size:.52rem;
+  font-weight:900;letter-spacing:.09em;text-transform:uppercase;text-align:center;padding:2px}
+.shot-x{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(8,11,18,.85);
+  color:#FF8B82;font-size:.6rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.shot-x:hover{background:var(--danger);color:#fff}
+.bar{width:100%;height:6px;background:var(--surface-3);border-radius:99px;overflow:hidden;margin-top:5px}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#FFB65C);transition:width .3s}
+
+/* ══ TOAST ══ */
+#toasts{position:fixed;right:20px;bottom:20px;z-index:120;display:flex;flex-direction:column;gap:10px;max-width:340px}
+.toast{display:flex;align-items:flex-start;gap:11px;background:rgba(26,34,51,.97);backdrop-filter:blur(12px);
+  border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r);padding:13px 16px;
+  box-shadow:0 18px 40px -16px rgba(0,0,0,.85);animation:tIn .45s var(--ease) both}
+.toast.ok{border-left-color:var(--ok)} .toast.bad{border-left-color:var(--danger)}
+.toast i{font-size:.9rem;margin-top:2px;color:var(--accent)}
+.toast.ok i{color:var(--ok)} .toast.bad i{color:#FF8B82}
+.toast div{font-size:.82rem;font-weight:600;line-height:1.45}
+.toast small{display:block;color:var(--muted);font-weight:500;margin-top:2px;font-size:.74rem}
+@keyframes tIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+.toast.out{animation:tOut .3s ease forwards}
+@keyframes tOut{to{opacity:0;transform:translateX(40px)}}
+@media(max-width:600px){#toasts{left:14px;right:14px;bottom:14px;max-width:none}}
+.spin{animation:sp 1s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<div id="login-screen" class="flex items-center justify-center min-h-screen p-4">
-    <div class="card rounded-2xl p-8 w-full max-w-md shadow-2xl">
-        <h1 class="text-5xl font-extrabold text-center text-orange-500 mb-2">UINRENT</h1>
-        <p class="text-center text-gray-400 mb-8 font-light">Admin Access Required</p>
-        <form id="login-form" class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium mb-1 text-gray-300">Email</label>
-                <input type="email" id="admin-email" class="input w-full p-3 rounded-xl focus:ring-2" placeholder="admin@uinrent.com" required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium mb-1 text-gray-300">Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="admin-pass" class="input w-full p-3 rounded-xl focus:ring-2 pr-10" placeholder="••••••••" required>
-                    <i class="fas fa-eye" id="toggle-password"></i>
-                </div>
-            </div>
-            <button type="submit" class="w-full btn-primary font-bold py-3 rounded-xl shadow-lg">Login Securely</button>
-            <p id="login-error" class="text-red-400 text-center text-sm hidden mt-3 font-semibold">Invalid credentials. Please check your login details.</p>
-        </form>
-    </div>
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-mark"><i class="fas fa-shield-halved"></i></div>
+    <div class="login-title">UINRENT</div>
+    <div class="login-sub">Control Room · staff access only</div>
+    <form id="login-form">
+      <div class="field">
+        <label for="admin-email">Email</label>
+        <input type="email" id="admin-email" class="input" placeholder="admin@uinrent.ro" required autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="admin-pass">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="admin-pass" class="input" placeholder="••••••••" required autocomplete="current-password">
+          <i class="fas fa-eye" id="toggle-password" title="Show password"></i>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="login-btn" style="margin-top:6px;padding:13px">
+        <i class="fas fa-arrow-right-to-bracket"></i> Sign in
+      </button>
+      <p id="login-error" class="err-msg hidden"></p>
+    </form>
+  </div>
 </div>
 
-<div id="dashboard" class="hidden min-h-screen p-4 md:p-10">
-    <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-gray-700 mb-8">
-        <h1 class="text-4xl font-extrabold text-orange-500 mb-2 md:mb-0">Fleet Dashboard</h1>
-        <div class="flex space-x-3 items-center">
-            <button onclick="openAddModal()" class="btn-primary flex items-center px-4 py-2 rounded-xl shadow-md">
-                <i class="fas fa-plus mr-2"></i> Add New Vehicle
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+  <div class="scrim" id="scrim" onclick="closeNav()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><i class="fas fa-car-side"></i></div>
+      <div>
+        <div class="brand-name">UINRENT</div>
+        <div class="brand-sub">Control Room</div>
+      </div>
+    </div>
+
+    <div class="nav-label">Operations</div>
+    <button class="nav-item active" data-go="overview"><i class="fas fa-gauge-high"></i> Overview</button>
+    <button class="nav-item" data-go="availability"><i class="fas fa-calendar-days"></i> Availability <span class="nav-pill" id="pill-blocked">0</span></button>
+    <button class="nav-item" data-go="bookings"><i class="fas fa-receipt"></i> Bookings <span class="nav-pill" id="pill-bookings">0</span></button>
+
+    <div class="nav-label">Catalogue</div>
+    <button class="nav-item" data-go="fleet"><i class="fas fa-car"></i> Fleet <span class="nav-pill" id="pill-cars">0</span></button>
+    <button class="nav-item" data-go="pricing"><i class="fas fa-tags"></i> Pricing</button>
+    <button class="nav-item" data-go="reviews"><i class="fas fa-star"></i> Reviews <span class="nav-pill" id="pill-reviews">0</span></button>
+
+    <div class="sidebar-foot">
+      <div class="who">
+        <div class="who-dot"><i class="fas fa-user-shield"></i></div>
+        <div class="who-mail" id="who-mail">—</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a href="index.html" target="_blank" class="btn btn-ghost btn-sm" style="flex:1"><i class="fas fa-up-right-from-square"></i> Site</a>
+        <button onclick="logout()" class="btn btn-danger btn-sm" style="flex:1"><i class="fas fa-power-off"></i> Exit</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="icon-btn burger" onclick="openNav()" aria-label="Menu"><i class="fas fa-bars"></i></button>
+      <div class="page-h">
+        <div class="page-title" id="page-title">Overview</div>
+        <div class="page-sub" id="page-sub">Everything happening across the fleet right now.</div>
+      </div>
+      <span class="live-chip"><span class="live-dot"></span> Live</span>
+      <button class="btn btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i> Add vehicle</button>
+    </div>
+
+    <!-- ───── OVERVIEW ───── -->
+    <section class="view on" id="v-overview">
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-ico"><i class="fas fa-car"></i></div><div class="stat-v num" id="s-cars">0</div><div class="stat-l">Vehicles</div></div>
+        <div class="stat b"><div class="stat-ico"><i class="fas fa-receipt"></i></div><div class="stat-v num" id="s-bookings">0</div><div class="stat-l">Bookings this month</div></div>
+        <div class="stat g"><div class="stat-ico"><i class="fas fa-euro-sign"></i></div><div class="stat-v num" id="s-revenue">€0</div><div class="stat-l">Revenue this month</div></div>
+        <div class="stat r"><div class="stat-ico"><i class="fas fa-ban"></i></div><div class="stat-v num" id="s-blocked">0</div><div class="stat-l">Blocked periods</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">Latest bookings</div><div class="panel-d">Newest first. Block the dates straight from a row to stop double-bookings.</div></div>
+          <div class="panel-tools"><button class="btn btn-ghost btn-sm" data-go="bookings"><i class="fas fa-list"></i> See all</button></div>
+        </div>
+        <div id="recent-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ───── AVAILABILITY ───── -->
+    <section class="view" id="v-availability">
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">Pick a vehicle</div><div class="panel-d">Each car keeps its own calendar. Customers can never select a red day for that car.</div></div>
+        </div>
+        <div class="car-strip" id="cal-car-strip"></div>
+
+        <div class="cal-layout">
+          <div>
+            <div class="cal-top">
+              <button class="icon-btn" id="cal-prev" onclick="calMove(-1)"><i class="fas fa-chevron-left"></i></button>
+              <div class="cal-mon" id="cal-mon">—</div>
+              <button class="icon-btn" onclick="calMove(1)"><i class="fas fa-chevron-right"></i></button>
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="calToday()"><i class="fas fa-crosshairs"></i> Today</button>
+            </div>
+            <div class="dow-row"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+            <div class="day-grid" id="day-grid"></div>
+            <div class="legend">
+              <div class="lg free"><i></i> Free</div>
+              <div class="lg book"><i></i> Booked by a customer</div>
+              <div class="lg blk"><i></i> Blocked by you</div>
+              <div class="lg sel"><i></i> Selecting</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="range-strip" id="range-strip">
+              <div class="rs-box"><div class="rs-l">From</div><div class="rs-v none" id="rs-from">Tap a day</div></div>
+              <i class="fas fa-arrow-right" style="color:var(--faint)"></i>
+              <div class="rs-box"><div class="rs-l">To</div><div class="rs-v none" id="rs-to">Tap again</div></div>
+              <button class="icon-btn" onclick="clearRange()" title="Clear"><i class="fas fa-eraser"></i></button>
+            </div>
+
+            <div class="field"><label for="blk-note">Note (optional)</label>
+              <input type="text" id="blk-note" class="input" placeholder="Service, private use, booked by phone…"></div>
+
+            <button class="btn btn-primary btn-block" id="blk-save" onclick="saveBlock()" disabled style="margin-bottom:8px">
+              <i class="fas fa-lock"></i> Block these dates
             </button>
-            <button onclick="logout()" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-xl shadow-md">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        </div>
-    </header>
+            <p class="t-mut" style="text-align:center;margin-bottom:20px">Blocked days turn red on the website immediately.</p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <div class="card p-6 rounded-2xl shadow-xl">
-            <h3 class="text-lg font-semibold mb-3 text-gray-400">Total Cars Managed</h3>
-            <p id="total-cars" class="text-4xl font-bold text-orange-400">0</p>
-        </div>
-        <div class="card p-6 rounded-2xl shadow-xl">
-            <h3 class="text-lg font-semibold mb-3 text-gray-400">Rentals (This Month)</h3>
-            <p id="total-rentals" class="text-4xl font-bold text-green-400">0</p>
-        </div>
-        <div class="card p-6 rounded-2xl shadow-xl">
-            <h3 class="text-lg font-semibold mb-3 text-gray-400">Total Revenue (This Month)</h3>
-            <p id="total-revenue" class="text-4xl font-bold text-blue-400">€0.00</p>
-        </div>
-    </div>
+            <div class="panel-t" style="font-size:.9rem;margin-bottom:11px">Blocked periods</div>
+            <div id="blk-list"></div>
 
-    <div class="card p-6 rounded-2xl overflow-x-auto shadow-2xl mb-10">
-        <h2 class="text-2xl font-bold mb-5 text-gray-200">Rentals This Month</h2>
-        <table class="w-full text-left table-auto min-w-max">
-            <thead class="border-b-2 border-green-500 text-gray-400 text-sm uppercase">
-                <tr>
-                    <th class="py-3 px-3">Date Booked</th>
-                    <th class="py-3 px-3">Car Model</th>
-                    <th class="py-3 px-3">Customer</th>
-                    <th class="py-3 px-3">Rental Dates</th>
-                    <th class="py-3 px-3 text-center">Sundays</th>
-                    <th class="py-3 px-3">Total</th>
-                </tr>
-            </thead>
-            <tbody id="rentals-table-body" class="divide-y divide-gray-700">
-                </tbody>
-        </table>
-        <p id="empty-rentals-message" class="text-center text-gray-500 p-8 hidden">
-            No rentals have been booked this month.
-        </p>
-    </div>
+            <div class="panel-t" style="font-size:.9rem;margin:22px 0 11px">Customer bookings for this car</div>
+            <div id="cal-bookings"></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    <div class="card p-6 rounded-2xl overflow-x-auto shadow-2xl">
-        <h2 class="text-2xl font-bold mb-5 text-gray-200">Vehicle Inventory</h2>
-        <table class="w-full text-left table-auto min-w-max">
-            <thead class="border-b-2 border-orange-500 text-gray-400 text-sm uppercase">
-                <tr>
-                    <th class="py-3 px-3">Model</th>
-                    <th class="py-3 px-3">Price</th>
-                    <th class="py-3 px-3">Image</th>
-                    <th class="py-3 px-3">Specs</th>
-                    <th class="py-3 px-3">Badge</th>
-                    <th class="py-3 px-3">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="cars-table-body" class="divide-y divide-gray-700">
-                </tbody>
-        </table>
-        <p id="empty-fleet-message" class="text-center text-gray-500 p-8 hidden">
-            The fleet is empty. Use the "Add New Vehicle" button to populate the inventory.
-        </p>
-    </div>
-</div>
+    <!-- ───── BOOKINGS ───── -->
+    <section class="view" id="v-bookings">
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">All bookings</div><div class="panel-d">Confirm, block the dates, or remove a request.</div></div>
+          <div class="panel-tools">
+            <select class="input" id="bk-filter" style="width:auto;min-width:160px" onchange="renderBookings()">
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div id="bookings-wrap"></div>
+      </div>
+    </section>
 
-<div id="car-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden p-4">
-    <div class="card w-full max-w-4xl rounded-2xl modal-content shadow-2xl modal animate-fade">
-        <div class="p-6">
-            <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-6">
-                <h2 id="modal-title" class="text-3xl font-bold text-orange-400">Add New Car</h2>
-                <button onclick="closeModal('car-modal')" class="text-gray-400 hover:text-white text-xl">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- ───── FLEET ───── -->
+    <section class="view" id="v-fleet">
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">Vehicle inventory</div><div class="panel-d">Prices you set here appear on the website instantly.</div></div>
+          <div class="panel-tools"><button class="btn btn-primary btn-sm" onclick="openAddModal()"><i class="fas fa-plus"></i> Add vehicle</button></div>
+        </div>
+        <div id="fleet-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ───── PRICING ───── -->
+    <section class="view" id="v-pricing">
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">Standard price list</div><div class="panel-d">The public rate table. Any car without its own prices uses these.</div></div>
+          <div class="panel-tools"><button class="btn btn-ghost btn-sm" onclick="resetGlobalRates()"><i class="fas fa-rotate-left"></i> Reset to 65/60/55/45</button></div>
+        </div>
+        <div class="tier-row" id="global-tiers"></div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="saveGlobalRates()"><i class="fas fa-floppy-disk"></i> Save price list</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h"><div><div class="panel-t">Rental calculator</div><div class="panel-d">Same maths the website uses. Quote a customer in one second.</div></div></div>
+        <div class="cal-layout">
+          <div class="calc-shell">
+            <div class="field"><label for="calc-car">Vehicle</label>
+              <select id="calc-car" class="input" onchange="runCalc()"><option value="">Standard price list</option></select></div>
+            <label style="display:block;font-size:.62rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Days</label>
+            <div class="calc-days">
+              <button class="calc-step" onclick="calcStep(-1)">−</button>
+              <input type="number" id="calc-days" value="6" min="1" max="90" class="num">
+              <button class="calc-step" onclick="calcStep(1)">+</button>
             </div>
-
-            <form id="car-form" class="space-y-6">
-                <input type="hidden" id="edit-id">
-
-                <fieldset class="border border-gray-700 p-4 rounded-xl">
-                    <legend class="text-lg font-semibold text-orange-400 px-2">Vehicle Details</legend>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Model Name</label>
-                            <input type="text" id="model" class="input w-full p-3 rounded-lg" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Price per Day (49.99€)</label>
-                            <input type="number" id="price" min="1" class="input w-full p-3 rounded-lg" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Badge</label>
-                            <select id="badge" class="input w-full p-3 rounded-lg">
-                                <option value="">None</option>
-                                <option value="new">New Arrival</option>
-                                <option value="popular">Popular Choice</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Seats</label>
-                            <input type="number" id="seats" min="2" max="9" class="input w-full p-3 rounded-lg" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Luggage (bags)</label>
-                            <input type="number" id="luggage" min="1" max="10" class="input w-full p-3 rounded-lg" required>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-sm font-medium mb-1">Range / Engine (e.g. Fuel-efficient)</label>
-                            <input type="text" id="range" class="input w-full p-3 rounded-lg" required>
-                        </div>
-                    </div>
-                </fieldset>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <fieldset class="border border-gray-700 p-4 rounded-xl">
-                        <legend class="text-lg font-semibold text-orange-400 px-2">Images</legend>
-                        
-                        <label class="block text-sm font-medium mb-1">Upload Images</label>
-                        <input type="file" id="image-upload" class="input w-full p-2" multiple accept="image/png, image/jpeg, image/webp">
-                        <p class="text-xs text-gray-400 mt-1">**First image is the main one.** (Max 5MB each)</p>
-                        
-                        <div id="image-previews-container" class="mt-4 flex flex-wrap gap-2">
-                            </div>
-                    </fieldset>
-
-                    <fieldset class="border border-gray-700 p-4 rounded-xl">
-                        <legend class="text-lg font-semibold text-orange-400 px-2">Descriptions</legend>
-                        <label class="block text-sm font-medium mb-1">Description (EN)</label>
-                        <textarea id="desc_en" rows="3" class="input w-full p-3 rounded-lg mb-4" required></textarea>
-                        <label class="block text-sm font-medium mb-1">Description (RO)</label>
-                        <textarea id="desc_ro" rows="3" class="input w-full p-3 rounded-lg" required></textarea>
-                    </fieldset>
-                </div>
-
-                <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" onclick="closeModal('car-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">Cancel</button>
-                    <button type="submit" id="save-button" class="px-5 py-2 btn-primary rounded-xl shadow-lg w-36 text-center">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <span class="save-text">Save Vehicle</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div id="custom-alert-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] hidden p-4">
-    <div class="card w-full max-w-sm p-6 rounded-2xl modal animate-fade shadow-2xl">
-        <h3 id="custom-alert-title" class="text-2xl font-bold mb-3 text-orange-400"></h3>
-        <p id="custom-alert-message" class="text-gray-300 mb-6"></p>
-        <div id="custom-alert-actions" class="flex justify-end space-x-3">
+            <div class="calc-out">
+              <div class="calc-line"><span>Tier</span><span id="calc-tier">—</span></div>
+              <div class="calc-line"><span>Rate per day</span><span id="calc-rate">—</span></div>
+              <div class="calc-line"><span>Days</span><span id="calc-d">—</span></div>
+              <div class="calc-line calc-tot"><span>Total</span><span class="num" id="calc-total">€0</span></div>
             </div>
-    </div>
+          </div>
+          <div>
+            <div class="tbl-wrap">
+              <table class="rate-tbl">
+                <thead><tr><th>Duration</th><th>Price / day</th><th>Saving</th><th>Total</th></tr></thead>
+                <tbody id="rate-body"></tbody>
+              </table>
+            </div>
+            <p class="t-mut" style="margin-top:12px">The highlighted row is the tier your current calculation falls into.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── REVIEWS ───── -->
+    <section class="view" id="v-reviews">
+      <div class="panel">
+        <div class="panel-h">
+          <div><div class="panel-t">Customer reviews</div><div class="panel-d">Left after booking on the website. Approve one to publish it.</div></div>
+        </div>
+        <div id="reviews-wrap"></div>
+      </div>
+    </section>
+  </main>
 </div>
 
+<!-- ══════════ CAR SHEET ══════════ -->
+<div class="overlay" id="car-modal">
+  <div class="sheet">
+    <div class="sheet-h">
+      <div class="sheet-t" id="modal-title">Add vehicle</div>
+      <button class="icon-btn" onclick="closeSheet('car-modal')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form id="car-form">
+      <div class="sheet-b">
+        <input type="hidden" id="edit-id">
+
+        <fieldset>
+          <legend>Identity</legend>
+          <div class="grid-2">
+            <div class="field"><label for="model">Model name</label><input type="text" id="model" class="input" placeholder="Dacia Sandero" required></div>
+            <div class="field"><label for="type">Category</label>
+              <select id="type" class="input">
+                <option value="economy">Economy</option><option value="sedan">Sedan</option>
+                <option value="suv">SUV</option><option value="van">Van</option><option value="premium">Premium</option>
+              </select></div>
+            <div class="field"><label for="badge">Badge</label>
+              <select id="badge" class="input"><option value="">None</option><option value="new">New arrival</option><option value="popular">Popular</option></select></div>
+          </div>
+          <div class="grid-3" style="margin-top:4px">
+            <div class="field"><label for="seats">Seats</label><input type="number" id="seats" min="2" max="9" value="5" class="input" required></div>
+            <div class="field"><label for="luggage">Bags</label><input type="number" id="luggage" min="1" max="10" value="2" class="input" required></div>
+            <div class="field"><label for="range">Gearbox / engine</label><input type="text" id="range" class="input" placeholder="Automatic" required></div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Daily rates for this car</legend>
+          <p class="t-mut" style="margin-bottom:13px">Leave these on the standard list unless this car is priced differently.</p>
+          <div class="tier-row" id="car-tiers"></div>
+          <button type="button" class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="useGlobalForCar()">
+            <i class="fas fa-wand-magic-sparkles"></i> Copy the standard price list
+          </button>
+        </fieldset>
+
+        <div class="grid-2">
+          <fieldset>
+            <legend>Photos</legend>
+            <input type="file" id="image-upload" class="input" multiple accept="image/png,image/jpeg,image/webp" style="padding:9px">
+            <p class="t-mut" style="margin-top:7px">First photo is the cover. Max 5 MB each. Uploading new files replaces the current set.</p>
+            <div class="shots" id="image-previews-container"></div>
+          </fieldset>
+          <fieldset>
+            <legend>Descriptions</legend>
+            <div class="field"><label for="desc_en">English</label><textarea id="desc_en" class="input" required></textarea></div>
+            <div class="field" style="margin-bottom:0"><label for="desc_ro">Romanian</label><textarea id="desc_ro" class="input" required></textarea></div>
+          </fieldset>
+        </div>
+      </div>
+      <div class="sheet-f">
+        <button type="button" class="btn btn-ghost" onclick="closeSheet('car-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-button"><i class="fas fa-floppy-disk"></i> <span>Save vehicle</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════ CONFIRM ══════════ -->
+<div class="overlay" id="confirm-modal">
+  <div class="sheet sheet-sm">
+    <div class="sheet-h"><div class="sheet-t" id="cf-title">Are you sure?</div></div>
+    <div class="sheet-b"><p style="font-size:.88rem;color:var(--muted);line-height:1.65" id="cf-msg"></p></div>
+    <div class="sheet-f">
+      <button class="btn btn-ghost" onclick="closeSheet('confirm-modal')">Cancel</button>
+      <button class="btn btn-danger" id="cf-go">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
 
 <script>
-    // ===============================================
-    // === 1. YOUR FIREBASE CONFIG                 ===
-    // ===============================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAQi_9PATsfdGL_StdPbtyYJPZsla5SwDY",
-      authDomain: "uin-rent-website.firebaseapp.com",
-      projectId: "uin-rent-website",
-      storageBucket: "uin-rent-website.firebasestorage.app",
-      messagingSenderId: "200564838706",
-      appId: "1:200564838706:web:e6b77a3e1c99d8d7ea472b"
+/* ═══════════ FIREBASE (unchanged) ═══════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAQi_9PATsfdGL_StdPbtyYJPZsla5SwDY",
+  authDomain: "uin-rent-website.firebaseapp.com",
+  projectId: "uin-rent-website",
+  storageBucket: "uin-rent-website.firebasestorage.app",
+  messagingSenderId: "200564838706",
+  appId: "1:200564838706:web:e6b77a3e1c99d8d7ea472b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+const carsCollection = db.collection("cars");
+const rentalsCollection = db.collection("rentals");
+// (legacy — blocked dates now live on each car document)
+const reviewsCollection = db.collection("reviews");
+const settingsDoc = db.collection("settings").doc("pricing");
+
+/* ═══════════ PRICING (mirrors index.html) ═══════════ */
+const TIER_META = [
+  { key:'tier1', max:3,        label:'Up to 3 days' },
+  { key:'tier2', max:7,        label:'3 – 7 days' },
+  { key:'tier3', max:14,       label:'7 – 14 days' },
+  { key:'tier4', max:Infinity, label:'14 – 30 days' }
+];
+const FALLBACK_RATES = [65,60,55,45];
+let DEFAULT_RATES = FALLBACK_RATES.slice();
+
+const sane = a => Array.isArray(a) && a.length===4 && a.every(v=>isFinite(v)&&v>0);
+function carRates(car){
+  if(car && car.rates){
+    const r=[car.rates.tier1,car.rates.tier2,car.rates.tier3,car.rates.tier4].map(Number);
+    if(sane(r)) return r;
+  }
+  const base = car ? Number(car.price_per_day) : NaN;
+  if(isFinite(base) && base>0){
+    const s = DEFAULT_RATES.map(v=>Math.round(base*(v/DEFAULT_RATES[0])));
+    if(sane(s)) return s;
+  }
+  return DEFAULT_RATES.slice();
+}
+function tierIndexForDays(d){
+  d = Math.max(1, parseInt(d,10)||1);
+  for(let i=0;i<TIER_META.length;i++) if(d<=TIER_META[i].max) return i;
+  return TIER_META.length-1;
+}
+const rateFor = (d,r)=> (r||DEFAULT_RATES)[tierIndexForDays(d)];
+const eur = n => '€' + Number(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+
+/* ═══════════ STATE ═══════════ */
+let allCars = [], allRentals = [], allBlocks = [], allReviews = [];
+let editingId = null, keptImages = [];
+let calCar = null, calCursor = new Date(), rFrom = null, rTo = null;
+
+/* ═══════════ HELPERS ═══════════ */
+const $ = id => document.getElementById(id);
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseYmd(s){const p=String(s).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function pretty(s){ if(!s) return '—'; try{return parseYmd(s).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return s;} }
+function eachDate(a,b,cb){let c=parseYmd(a);const e=parseYmd(b);let g=0;while(c<=e&&g<800){cb(ymd(c));c.setDate(c.getDate()+1);g++;}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+function toast(msg, sub, kind){
+  const el=document.createElement('div');
+  el.className='toast '+(kind||'');
+  const ico = kind==='bad'?'fa-circle-exclamation':kind==='ok'?'fa-circle-check':'fa-circle-info';
+  el.innerHTML=`<i class="fas ${ico}"></i><div>${esc(msg)}${sub?`<small>${esc(sub)}</small>`:''}</div>`;
+  $('toasts').appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),320);},4200);
+}
+function openSheet(id){$(id).classList.add('on');}
+function closeSheet(id){$(id).classList.remove('on');}
+function confirmAction(title,msg,fn){
+  $('cf-title').textContent=title; $('cf-msg').textContent=msg;
+  const b=$('cf-go'); const nb=b.cloneNode(true); b.parentNode.replaceChild(nb,b);
+  nb.onclick=()=>{closeSheet('confirm-modal');fn();};
+  openSheet('confirm-modal');
+}
+function emptyState(icon,title,sub){
+  return `<div class="empty"><i class="fas ${icon}"></i><p>${esc(title)}</p><span>${esc(sub||'')}</span></div>`;
+}
+
+/* ═══════════ AUTH ═══════════ */
+$('login-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const btn=$('login-btn'), err=$('login-error');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner spin"></i> Checking…';
+  try{
+    await firebase.auth().signInWithEmailAndPassword($('admin-email').value, $('admin-pass').value);
+    err.classList.add('hidden');
+  }catch(error){
+    err.textContent = ['auth/wrong-password','auth/user-not-found','auth/invalid-credential','auth/invalid-email']
+      .includes(error.code) ? 'That email and password don\'t match an account.' : 'Sign-in failed. Try again in a moment.';
+    err.classList.remove('hidden');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right-to-bracket"></i> Sign in';
+  }
+});
+function logout(){ firebase.auth().signOut(); }
+$('toggle-password').addEventListener('click', function(){
+  const i=$('admin-pass');
+  i.type = i.type==='password' ? 'text' : 'password';
+  this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
+});
+
+/* ═══════════ NAV ═══════════ */
+const PAGES = {
+  overview:['Overview','Everything happening across the fleet right now.'],
+  availability:['Availability','Mark days red so nobody can book a car that is already out.'],
+  bookings:['Bookings','Every request customers have sent from the website.'],
+  fleet:['Fleet','Add, edit and price the cars shown on the website.'],
+  pricing:['Pricing','The public rate table and your quoting calculator.'],
+  reviews:['Reviews','What customers said after booking.']
+};
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  $('v-'+view).classList.add('on');
+  document.querySelectorAll('.nav-item[data-go]').forEach(b=>b.classList.toggle('active', b.dataset.go===view));
+  $('page-title').textContent = PAGES[view][0];
+  $('page-sub').textContent = PAGES[view][1];
+  closeNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(view==='availability') renderCalendar();
+  if(view==='pricing') runCalc();
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-go]');
+  if(b) go(b.dataset.go);
+});
+function openNav(){ $('sidebar').classList.add('open'); $('scrim').classList.add('on'); }
+function closeNav(){ $('sidebar').classList.remove('open'); $('scrim').classList.remove('on'); }
+
+/* ═══════════ GLOBAL RATES ═══════════ */
+function renderGlobalTiers(){
+  $('global-tiers').innerHTML = TIER_META.map((t,i)=>`
+    <div class="tier-in">
+      <label>${t.label}</label>
+      <div class="tier-money"><span>€</span>
+        <input type="number" min="1" step="1" id="g-${t.key}" value="${DEFAULT_RATES[i]}" oninput="runCalc()">
+      </div>
+    </div>`).join('');
+}
+function readGlobalInputs(){ return TIER_META.map(t=>Number($('g-'+t.key).value)); }
+async function saveGlobalRates(){
+  const r = readGlobalInputs();
+  if(!sane(r)) return toast('Every tier needs a price above zero.',null,'bad');
+  try{
+    await settingsDoc.set({tier1:r[0],tier2:r[1],tier3:r[2],tier4:r[3],updatedAt:new Date().toISOString()},{merge:true});
+    DEFAULT_RATES = r;
+    toast('Price list saved','The website is showing the new rates now.','ok');
+    renderFleet(); runCalc();
+  }catch(e){ console.error(e); toast('Could not save the price list', e.message,'bad'); }
+}
+function resetGlobalRates(){
+  DEFAULT_RATES = FALLBACK_RATES.slice();
+  renderGlobalTiers(); runCalc();
+  toast('Reset to €65 / €60 / €55 / €45','Press Save price list to publish it.');
+}
+async function loadGlobalRates(){
+  try{
+    const s = await settingsDoc.get();
+    if(s.exists){
+      const d=s.data()||{}; const r=[d.tier1,d.tier2,d.tier3,d.tier4].map(Number);
+      if(sane(r)) DEFAULT_RATES=r;
+    }
+  }catch(e){ console.warn('Price list fallback:', e.message); }
+  renderGlobalTiers();
+}
+
+/* ═══════════ CALCULATOR ═══════════ */
+function calcStep(n){
+  const i=$('calc-days'); i.value=Math.min(90,Math.max(1,(parseInt(i.value,10)||1)+n)); runCalc();
+}
+function runCalc(){
+  if(!$('calc-days')) return;
+  const live = readGlobalInputsSafe();
+  let days = parseInt($('calc-days').value,10); if(isNaN(days)||days<1) days=1; if(days>90) days=90;
+  $('calc-days').value=days;
+  const carId=$('calc-car').value;
+  const rates = carId ? carRates(allCars.find(c=>c.id===carId)) : live;
+  const idx = tierIndexForDays(days), rate = rates[idx];
+  $('calc-tier').textContent = TIER_META[idx].label;
+  $('calc-rate').textContent = eur(rate)+' / day';
+  $('calc-d').textContent = days;
+  $('calc-total').textContent = eur(days*rate);
+  $('rate-body').innerHTML = TIER_META.map((t,i)=>{
+    const save = rates[0]-rates[i];
+    return `<tr class="${i===idx?'hot':''}">
+      <td>${t.label}</td><td>${eur(rates[i])}</td>
+      <td>${save>0?eur(save)+' / day':'—'}</td>
+      <td>${eur(days*rates[i])}</td></tr>`;
+  }).join('');
+}
+function readGlobalInputsSafe(){
+  if(!$('g-tier1')) return DEFAULT_RATES.slice();
+  const r = readGlobalInputs();
+  return sane(r) ? r : DEFAULT_RATES.slice();
+}
+
+/* ═══════════ CALENDAR / AVAILABILITY ═══════════ */
+function bookedDatesFor(carId){
+  const set=new Set();
+  allRentals.filter(r=>r.carId===carId && r.status!=='cancelled')
+    .forEach(r=>{ if(r.pickupDate&&r.returnDate) eachDate(r.pickupDate,r.returnDate,d=>set.add(d)); });
+  return set;
+}
+function ranges(carId){
+  const car = allCars.find(c=>c.id===carId);
+  return (car && Array.isArray(car.blockedRanges)) ? car.blockedRanges : [];
+}
+function blockedDatesFor(carId){
+  const set=new Set();
+  ranges(carId).forEach(b=>{ if(b.start) eachDate(b.start,b.end||b.start,d=>set.add(d)); });
+  return set;
+}
+function countBlocks(){ return allCars.reduce((t,c)=>t+((c.blockedRanges||[]).length),0); }
+function renderCarStrip(){
+  const strip=$('cal-car-strip');
+  if(!allCars.length){ strip.innerHTML='<p class="t-mut">Add a vehicle first.</p>'; return; }
+  if(!calCar || !allCars.some(c=>c.id===calCar)) calCar = allCars[0].id;
+  strip.innerHTML = allCars.map(c=>{
+    const img=(c.images&&c.images[0])||'https://placehold.co/60x60/1A2233/8B98AE?text=%20';
+    return `<button class="car-chip ${c.id===calCar?'on':''}" onclick="pickCalCar('${c.id}')">
+      <img src="${esc(img)}" alt=""> ${esc(c.model)}</button>`;
+  }).join('');
+  const sel=$('calc-car');
+  if(sel) sel.innerHTML = '<option value="">Standard price list</option>' +
+    allCars.map(c=>`<option value="${c.id}">${esc(c.model)}</option>`).join('');
+}
+function pickCalCar(id){ calCar=id; clearRange(); renderCarStrip(); renderCalendar(); }
+function calMove(n){ calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1); renderCalendar(); }
+function calToday(){ calCursor=new Date(); renderCalendar(); }
+
+function renderCalendar(){
+  const grid=$('day-grid'); if(!grid) return;
+  if(!calCar){ grid.innerHTML=''; $('cal-mon').textContent='—'; $('blk-list').innerHTML=emptyState('fa-car','No vehicle selected',''); return; }
+
+  const first=new Date(calCursor.getFullYear(),calCursor.getMonth(),1);
+  $('cal-mon').textContent=first.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  const booked=bookedDatesFor(calCar), blocked=blockedDatesFor(calCar);
+  const offset=(first.getDay()+6)%7;
+  const dim=new Date(calCursor.getFullYear(),calCursor.getMonth()+1,0).getDate();
+
+  let h='';
+  for(let i=0;i<offset;i++) h+='<div class="day void"></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=ymd(new Date(calCursor.getFullYear(),calCursor.getMonth(),d));
+    let cls='day';
+    if(blocked.has(ds)) cls+=' blocked';
+    else if(booked.has(ds)) cls+=' booked';
+    if(rFrom&&rTo&&ds>rFrom&&ds<rTo) cls+=' inr';
+    if(ds===rFrom||ds===rTo) cls+=' pick';
+    const mark = (blocked.has(ds)||booked.has(ds)) ? '<span class="day-mark"></span>' : '';
+    h+=`<button type="button" class="${cls}" onclick="tapDay('${ds}')" title="${ds}">${d}${mark}</button>`;
+  }
+  grid.innerHTML=h;
+  renderBlockList();
+  renderCalBookings();
+}
+function tapDay(ds){
+  if(!rFrom || (rFrom&&rTo) || ds<rFrom){ rFrom=ds; rTo=null; }
+  else { rTo=ds; }
+  paintRange(); renderCalendar();
+}
+function paintRange(){
+  $('rs-from').textContent = rFrom?pretty(rFrom):'Tap a day';
+  $('rs-to').textContent   = rTo?pretty(rTo):'Tap again';
+  $('rs-from').classList.toggle('none',!rFrom);
+  $('rs-to').classList.toggle('none',!rTo);
+  $('range-strip').classList.toggle('armed', !!rFrom);
+  $('blk-save').disabled = !rFrom;
+}
+function clearRange(){ rFrom=null; rTo=null; paintRange(); renderCalendar(); }
+
+async function saveBlock(){
+  if(!calCar || !rFrom) return;
+  const car = allCars.find(c=>c.id===calCar);
+  const btn=$('blk-save'); btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner spin"></i> Saving…';
+  const next = ranges(calCar).concat([{
+    id: 'b' + Date.now(),
+    start: rFrom, end: rTo || rFrom,
+    note: $('blk-note').value.trim(),
+    source: 'manual',
+    createdAt: new Date().toISOString()
+  }]);
+  try{
+    await carsCollection.doc(calCar).set({ blockedRanges: next }, { merge:true });
+    $('blk-note').value='';
+    clearRange();
+    toast('Dates blocked', (car?car.model:'') + ' is now unavailable on those days.','ok');
+  }catch(e){
+    console.error(e);
+    const denied = (e.code === 'permission-denied');
+    toast(denied ? 'Sign-in has expired' : 'Could not block those dates',
+          denied ? 'Sign out and back in, then try again.' : e.message, 'bad');
+  }finally{
+    btn.innerHTML='<i class="fas fa-lock"></i> Block these dates';
+    paintRange();
+  }
+}
+function removeBlock(rangeId){
+  confirmAction('Free these dates?','Customers will be able to book this car on those days again.',async()=>{
+    const next = ranges(calCar).filter(b=>b.id !== rangeId);
+    try{
+      await carsCollection.doc(calCar).set({ blockedRanges: next }, { merge:true });
+      toast('Dates released',null,'ok');
+    }catch(e){ toast('Could not remove that block', e.message,'bad'); }
+  });
+}
+function renderBlockList(){
+  const list = ranges(calCar).slice().sort((a,b)=>String(a.start).localeCompare(String(b.start)));
+  $('blk-list').innerHTML = list.length ? list.map(b=>`
+    <div class="blk-item">
+      <span class="blk-bar ${b.source==='booking'?'auto':''}"></span>
+      <div class="blk-main">
+        <div class="blk-date">${pretty(b.start)} → ${pretty(b.end||b.start)}</div>
+        <div class="blk-note">${esc(b.note||(b.source==='booking'?'From a customer booking':'Blocked manually'))}</div>
+      </div>
+      <button class="icon-btn danger" onclick="removeBlock('${b.id}')" title="Release"><i class="fas fa-trash-can"></i></button>
+    </div>`).join('') : emptyState('fa-calendar-check','No blocked dates','This car is bookable on every free day.');
+}
+function renderCalBookings(){
+  const list = allRentals.filter(r=>r.carId===calCar && r.status!=='cancelled')
+    .sort((a,b)=>String(a.pickupDate).localeCompare(String(b.pickupDate)));
+  $('cal-bookings').innerHTML = list.length ? list.map(r=>`
+    <div class="blk-item">
+      <span class="blk-bar auto"></span>
+      <div class="blk-main">
+        <div class="blk-date">${pretty(r.pickupDate)} → ${pretty(r.returnDate)}</div>
+        <div class="blk-note">${esc(r.customerName||'—')} · ${esc(r.customerPhone||r.customerEmail||'')}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="blockFromBooking('${r.id}')" title="Block these dates"><i class="fas fa-lock"></i></button>
+    </div>`).join('') : emptyState('fa-inbox','No bookings for this car','');
+}
+
+/* one click: turn a customer booking into a hard block */
+async function blockFromBooking(rentalId){
+  const r = allRentals.find(x=>x.id===rentalId);
+  if(!r) return;
+  const cur = ranges(r.carId);
+  if(cur.some(b=>b.start===r.pickupDate && (b.end||b.start)===r.returnDate))
+    return toast('Already blocked','Those dates are closed for this car.');
+  const next = cur.concat([{
+    id:'b'+Date.now(), start:r.pickupDate, end:r.returnDate,
+    note:'Booked by '+(r.customerName||'a customer'), source:'booking', createdAt:new Date().toISOString()
+  }]);
+  try{
+    await carsCollection.doc(r.carId).set({ blockedRanges: next }, { merge:true });
+    toast('Dates blocked','No one else can book '+(r.carModel||'this car')+' then.','ok');
+  }catch(e){ toast('Could not block those dates', e.message,'bad'); }
+}
+
+/* ═══════════ BOOKINGS ═══════════ */
+function renderBookings(){
+  const f = $('bk-filter') ? $('bk-filter').value : 'all';
+  const rows = allRentals.filter(r=> f==='all' ? true : (r.status||'pending')===f );
+  $('bookings-wrap').innerHTML = rows.length ? `<div class="tbl-wrap"><table>
+    <thead><tr><th>Requested</th><th>Vehicle</th><th>Customer</th><th>Rental dates</th><th>Rate</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${rows.map(bookingRow).join('')}</tbody></table></div>`
+    : emptyState('fa-inbox','No bookings here','Requests from the website land in this list.');
+}
+function bookingRow(r){
+  const st=r.status||'pending';
+  const when = r.rentalDate ? new Date(r.rentalDate).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) : '—';
+  const rate = r.ratePerDay ? eur(r.ratePerDay) : '—';
+  return `<tr>
+    <td class="t-mut">${when}</td>
+    <td class="t-strong">${esc(r.carModel||'—')}</td>
+    <td><div class="t-strong">${esc(r.customerName||'—')}</div>
+        <div class="t-mut">${esc(r.customerPhone||'')}</div>
+        <div class="t-mut">${esc(r.customerEmail||'')}</div>
+        ${r.notes?`<div class="t-mut" style="margin-top:4px"><i class="fas fa-comment-dots"></i> ${esc(r.notes)}</div>`:''}</td>
+    <td><div>${pretty(r.pickupDate)} → ${pretty(r.returnDate)}</div>
+        <div class="t-mut">${r.totalDays||'—'} days · ${esc(r.pickupLocation||'')}</div></td>
+    <td class="num">${rate}</td>
+    <td class="t-money">${r.totalCost?eur(r.totalCost):'—'}</td>
+    <td><span class="tag tag-${st}">${st}</span></td>
+    <td><div class="row-actions">
+      <button class="btn btn-danger btn-sm" onclick="blockFromBooking('${r.id}')" title="Block these dates"><i class="fas fa-lock"></i></button>
+      ${st!=='confirmed'?`<button class="btn btn-ok btn-sm" onclick="setStatus('${r.id}','confirmed')" title="Confirm"><i class="fas fa-check"></i></button>`:''}
+      ${st!=='cancelled'?`<button class="btn btn-ghost btn-sm" onclick="setStatus('${r.id}','cancelled')" title="Cancel"><i class="fas fa-xmark"></i></button>`:''}
+      <button class="icon-btn danger" style="width:31px;height:31px" onclick="deleteBooking('${r.id}')" title="Delete"><i class="fas fa-trash-can"></i></button>
+    </div></td></tr>`;
+}
+async function setStatus(id,status){
+  try{ await rentalsCollection.doc(id).set({status},{merge:true}); toast('Marked as '+status,null,'ok'); }
+  catch(e){ toast('Could not update that booking', e.message,'bad'); }
+}
+function deleteBooking(id){
+  confirmAction('Delete this booking?','The request is removed permanently. Blocked dates stay as they are.',async()=>{
+    try{ await rentalsCollection.doc(id).delete(); toast('Booking deleted',null,'ok'); }
+    catch(e){ toast('Could not delete it', e.message,'bad'); }
+  });
+}
+function renderRecent(){
+  const rows = allRentals.slice(0,6);
+  $('recent-wrap').innerHTML = rows.length ? `<div class="tbl-wrap"><table>
+    <thead><tr><th>Requested</th><th>Vehicle</th><th>Customer</th><th>Rental dates</th><th>Total</th><th>Status</th><th></th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td class="t-mut">${r.rentalDate?new Date(r.rentalDate).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}):'—'}</td>
+      <td class="t-strong">${esc(r.carModel||'—')}</td>
+      <td>${esc(r.customerName||'—')}<div class="t-mut">${esc(r.customerPhone||'')}</div></td>
+      <td>${pretty(r.pickupDate)} → ${pretty(r.returnDate)}</td>
+      <td class="t-money">${r.totalCost?eur(r.totalCost):'—'}</td>
+      <td><span class="tag tag-${r.status||'pending'}">${r.status||'pending'}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="blockFromBooking('${r.id}')"><i class="fas fa-lock"></i> Block</button></td>
+    </tr>`).join('')}</tbody></table></div>`
+    : emptyState('fa-inbox','No bookings yet','When someone books on the website it appears here.');
+}
+
+/* ═══════════ FLEET ═══════════ */
+function renderFleet(){
+  $('fleet-wrap').innerHTML = allCars.length ? `<div class="tbl-wrap"><table>
+    <thead><tr><th>Photo</th><th>Model</th><th>Daily rates</th><th>Specs</th><th>Badge</th><th>Actions</th></tr></thead>
+    <tbody>${allCars.map(c=>{
+      const r=carRates(c);
+      const own = !!(c.rates && sane([c.rates.tier1,c.rates.tier2,c.rates.tier3,c.rates.tier4].map(Number)));
+      const img=(c.images&&c.images[0])||'https://placehold.co/128x80/1A2233/8B98AE?text=No+photo';
+      return `<tr>
+        <td><img src="${esc(img)}" class="thumb" alt=""></td>
+        <td><div class="t-strong">${esc(c.model)}</div><div class="t-mut">${esc(c.type||'—')}</div></td>
+        <td><div class="num t-strong">${r.map(v=>eur(v)).join(' · ')}</div>
+            <div class="t-mut">${own?'Custom prices':'Standard price list'}</div></td>
+        <td class="t-mut"><i class="fas fa-users"></i> ${c.seats||'—'} · <i class="fas fa-suitcase-rolling"></i> ${c.luggage||'—'}<br>${esc(c.range||'')}</td>
+        <td><span class="tag tag-${c.badge||'none'}">${esc(c.badge||'none')}</span></td>
+        <td><div class="row-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditModal('${c.id}')"><i class="fas fa-pen"></i> Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="pickCalCar('${c.id}');go('availability')"><i class="fas fa-calendar-days"></i> Dates</button>
+          <button class="icon-btn danger" style="width:31px;height:31px" onclick="confirmDeleteCar('${c.id}')"><i class="fas fa-trash-can"></i></button>
+        </div></td></tr>`;
+    }).join('')}</tbody></table></div>`
+    : emptyState('fa-car','The fleet is empty','Use Add vehicle to put your first car on the website.');
+}
+
+/* ═══════════ REVIEWS ═══════════ */
+function renderReviews(){
+  $('reviews-wrap').innerHTML = allReviews.length ? `<div class="tbl-wrap"><table>
+    <thead><tr><th>Left on</th><th>Vehicle</th><th>Customer</th><th>Rating</th><th>Comment</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${allReviews.map(v=>{
+      const stars='★'.repeat(Math.max(0,Math.min(5,v.rating||0)))+'☆'.repeat(5-Math.max(0,Math.min(5,v.rating||0)));
+      return `<tr>
+        <td class="t-mut">${v.createdAt?new Date(v.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}):'—'}</td>
+        <td class="t-strong">${esc(v.carModel||'—')}</td>
+        <td>${esc(v.customerName||'Anonymous')}</td>
+        <td style="color:#FBBF4B;letter-spacing:2px">${stars}</td>
+        <td class="t-mut" style="max-width:320px">${esc(v.comment||'')}</td>
+        <td><span class="tag ${v.approved?'tag-confirmed':'tag-pending'}">${v.approved?'published':'pending'}</span></td>
+        <td><div class="row-actions">
+          ${!v.approved?`<button class="btn btn-ok btn-sm" onclick="approveReview('${v.id}',true)"><i class="fas fa-check"></i> Publish</button>`
+                       :`<button class="btn btn-ghost btn-sm" onclick="approveReview('${v.id}',false)"><i class="fas fa-eye-slash"></i> Hide</button>`}
+          <button class="icon-btn danger" style="width:31px;height:31px" onclick="deleteReview('${v.id}')"><i class="fas fa-trash-can"></i></button>
+        </div></td></tr>`;
+    }).join('')}</tbody></table></div>`
+    : emptyState('fa-star','No reviews yet','Customers can leave one right after they book.');
+}
+async function approveReview(id,val){
+  try{ await reviewsCollection.doc(id).set({approved:val},{merge:true}); toast(val?'Review published':'Review hidden',null,'ok'); }
+  catch(e){ toast('Could not update that review', e.message,'bad'); }
+}
+function deleteReview(id){
+  confirmAction('Delete this review?','It will be removed permanently.',async()=>{
+    try{ await reviewsCollection.doc(id).delete(); toast('Review deleted',null,'ok'); }
+    catch(e){ toast('Could not delete it', e.message,'bad'); }
+  });
+}
+
+/* ═══════════ CAR SHEET ═══════════ */
+function renderCarTiers(vals){
+  const v = vals || DEFAULT_RATES;
+  $('car-tiers').innerHTML = TIER_META.map((t,i)=>`
+    <div class="tier-in"><label>${t.label}</label>
+      <div class="tier-money"><span>€</span>
+        <input type="number" min="1" step="1" id="c-${t.key}" value="${v[i]}"></div>
+    </div>`).join('');
+}
+function useGlobalForCar(){ renderCarTiers(readGlobalInputsSafe()); toast('Standard prices copied in'); }
+function paintShots(){
+  $('image-previews-container').innerHTML = keptImages.map((u,i)=>`
+    <div class="shot ${i===0?'lead':''}">
+      <img src="${esc(u)}" alt="">
+      ${i===0?'<span class="shot-tag">Cover</span>':''}
+      <button type="button" class="shot-x" onclick="dropShot(${i})"><i class="fas fa-xmark"></i></button>
+    </div>`).join('');
+}
+function dropShot(i){ keptImages.splice(i,1); paintShots(); }
+
+function openAddModal(){
+  editingId=null; keptImages=[];
+  $('modal-title').textContent='Add vehicle';
+  $('car-form').reset(); $('edit-id').value='';
+  renderCarTiers(readGlobalInputsSafe()); paintShots();
+  openSheet('car-modal');
+}
+async function openEditModal(id){
+  try{
+    const doc = await carsCollection.doc(id).get();
+    if(!doc.exists) return toast('That vehicle no longer exists',null,'bad');
+    const car=doc.data(); editingId=id;
+    $('modal-title').textContent='Edit '+car.model;
+    $('edit-id').value=id;
+    $('model').value=car.model||'';
+    $('type').value=car.type||'economy';
+    $('seats').value=car.seats||5;
+    $('luggage').value=car.luggage||2;
+    $('range').value=car.range||'';
+    $('badge').value=car.badge||'';
+    $('desc_en').value=car.description_en||'';
+    $('desc_ro').value=car.description_ro||'';
+    renderCarTiers(carRates(car));
+    keptImages=(car.images||[]).slice(); paintShots();
+    $('image-upload').value='';
+    openSheet('car-modal');
+  }catch(e){ console.error(e); toast('Could not open that vehicle', e.message,'bad'); }
+}
+
+function uploadFile(file, box, modelName){
+  return new Promise((resolve,reject)=>{
+    const path = `cars/${modelName.replace(/[^a-zA-Z0-9]/g,'_')}/${Date.now()}-${file.name}`;
+    const task = storage.ref(path).put(file);
+    const row=document.createElement('div');
+    row.style.width='100%';
+    row.innerHTML=`<div class="t-mut" style="overflow:hidden;text-overflow:ellipsis">${esc(file.name)}</div><div class="bar"><i></i></div>`;
+    box.appendChild(row);
+    const bar=row.querySelector('.bar>i');
+    task.on('state_changed',
+      s=>{ bar.style.width=((s.bytesTransferred/s.totalBytes)*100)+'%'; },
+      err=>{ row.innerHTML=`<div style="color:#FF8B82;font-size:.75rem">Upload failed: ${esc(file.name)}</div>`; reject(err); },
+      ()=>{ task.snapshot.ref.getDownloadURL().then(u=>{ row.remove(); resolve(u); }).catch(reject); }
+    );
+  });
+}
+
+$('car-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const btn=$('save-button');
+  btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner spin"></i> <span>Saving…</span>';
+  const modelName=$('model').value.trim();
+  const box=$('image-previews-container');
+  const files=$('image-upload').files;
+
+  try{
+    let images = keptImages.slice();
+    if(files.length){
+      box.innerHTML='';
+      const jobs=[];
+      for(const f of files){
+        if(f.size > 5*1024*1024){ toast('Skipped '+f.name,'Bigger than 5 MB.','bad'); continue; }
+        jobs.push(uploadFile(f, box, modelName||'car'));
+      }
+      const fresh = await Promise.all(jobs);
+      if(fresh.length) images = fresh;
+    }
+    if(!images.length){
+      toast('Add at least one photo','A car needs a cover image for the website.','bad');
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-floppy-disk"></i> <span>Save vehicle</span>';
+      paintShots(); return;
+    }
+
+    const rates = TIER_META.map(t=>Number($('c-'+t.key).value));
+    if(!sane(rates)){
+      toast('Check the daily rates','Every tier needs a price above zero.','bad');
+      btn.disabled=false; btn.innerHTML='<i class="fas fa-floppy-disk"></i> <span>Save vehicle</span>'; return;
+    }
+
+    const carData={
+      model:modelName,
+      type:$('type').value,
+      rates:{tier1:rates[0],tier2:rates[1],tier3:rates[2],tier4:rates[3]},
+      price_per_day:rates[0],           // kept in sync for older code
+      seats:+$('seats').value,
+      luggage:+$('luggage').value,
+      range:$('range').value.trim(),
+      badge:$('badge').value||'',
+      images,
+      description_en:$('desc_en').value.trim(),
+      description_ro:$('desc_ro').value.trim(),
+      updatedAt:new Date().toISOString()
     };
-    
-    // ===============================================
-    // === 2. INITIALIZE FIREBASE & GLOBALS        ===
-    // ===============================================
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    const carsCollection = db.collection("cars");
-    const rentalsCollection = db.collection("rentals");
 
-    let editingId = null;
+    if(editingId){
+      // merge keeps blockedRanges untouched
+      await carsCollection.doc(editingId).set(carData,{merge:true});
+      toast(carData.model+' updated','New prices are live on the website.','ok');
+    }else{
+      await carsCollection.add(carData);
+      toast(carData.model+' added','It is on the website now.','ok');
+    }
+    closeSheet('car-modal');
+  }catch(err){
+    console.error(err); toast('Could not save the vehicle', err.message,'bad');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<i class="fas fa-floppy-disk"></i> <span>Save vehicle</span>';
+  }
+});
 
-    // ===============================================
-    // === 3. AUTHENTICATION (SECURE VERSION)        ===
-    // ===============================================
-    
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('admin-email').value;
-        const pass = document.getElementById('admin-pass').value;
-        const errorP = document.getElementById('login-error');
+function confirmDeleteCar(id){
+  const car=allCars.find(c=>c.id===id); if(!car) return;
+  confirmAction('Delete '+car.model+'?','The vehicle and its photos are removed permanently. Its blocked dates are cleared too.',
+    ()=>deleteCar(id,car));
+}
+async function deleteCar(id,car){
+  try{
+    if(car.images&&car.images.length){
+      await Promise.allSettled(car.images.map(u=>{
+        try{ return u.includes('placehold.co') ? Promise.resolve() : storage.refFromURL(u).delete(); }
+        catch(e){ return Promise.resolve(); }
+      }));
+    }
+    await carsCollection.doc(id).delete();
+    toast(car.model+' deleted',null,'ok');
+  }catch(e){ console.error(e); toast('Could not delete that vehicle', e.message,'bad'); }
+}
 
-        try {
-            await firebase.auth().signInWithEmailAndPassword(email, pass);
-            errorP.classList.add('hidden');
-        } catch (error) {
-            if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                errorP.textContent = 'Invalid email or password.';
-            } else {
-                errorP.textContent = 'An unknown error occurred. Please try again.';
-            }
-            errorP.classList.remove('hidden');
+/* ═══════════ LIVE DATA ═══════════ */
+function watchCars(){
+  carsCollection.orderBy('model').onSnapshot(s=>{
+    allCars = s.docs.map(d=>({id:d.id,...d.data()}));
+    $('s-cars').textContent = allCars.length;
+    $('pill-cars').textContent = allCars.length;
+    $('s-blocked').textContent = countBlocks();
+    $('pill-blocked').textContent = countBlocks();
+    renderFleet(); renderCarStrip(); renderCalendar(); runCalc();
+  }, e=>{ console.error(e); toast('Could not load the fleet', e.message,'bad'); });
+}
+function watchRentals(){
+  rentalsCollection.orderBy('rentalDate','desc').limit(300).onSnapshot(s=>{
+    allRentals = s.docs.map(d=>({id:d.id,...d.data()}));
+    const now=new Date(), som=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
+    const month = allRentals.filter(r=>r.rentalDate && r.rentalDate>=som && r.status!=='cancelled');
+    $('s-bookings').textContent = month.length;
+    $('pill-bookings').textContent = allRentals.length;
+    $('s-revenue').textContent = eur(month.reduce((t,r)=>t+(parseFloat(r.totalCost)||0),0));
+    renderBookings(); renderRecent(); renderCalendar();
+  }, e=>{ console.error(e); toast('Could not load bookings', e.message,'bad'); });
+}
+// Blocked dates live on the car document, so the cars listener already covers them.
+function watchBlocks(){ /* no separate listener needed */ }
+function watchReviews(){
+  reviewsCollection.onSnapshot(s=>{
+    allReviews = s.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+    $('pill-reviews').textContent = allReviews.filter(r=>!r.approved).length;
+    renderReviews();
+  }, e=>{ console.warn('reviews:', e.message);
+    $('reviews-wrap').innerHTML = emptyState('fa-star','No reviews yet','They appear once customers start leaving them.');
+  });
+}
+
+/* ═══════════ BOOT ═══════════ */
+window.addEventListener('load', ()=>{
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+    .catch(e=>console.error('persistence:',e))
+    .finally(()=>{
+      firebase.auth().onAuthStateChanged(async user=>{
+        if(user){
+          $('login-screen').classList.add('hidden');
+          $('app').classList.add('on');
+          $('who-mail').textContent = user.email || 'Signed in';
+          await loadGlobalRates();
+          runCalc();
+          watchCars(); watchRentals(); watchBlocks(); watchReviews();
+        }else{
+          $('login-screen').classList.remove('hidden');
+          $('app').classList.remove('on');
         }
+      });
     });
+});
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  document.querySelectorAll('.overlay.on').forEach(o=>o.classList.remove('on'));
+  closeNav();
+});
 
-    function logout() {
-        firebase.auth().signOut();
-    }
-    
-    // === NEW: Password Toggle ===
-    const togglePassword = document.getElementById('toggle-password');
-    const passwordInput = document.getElementById('admin-pass');
-    togglePassword.addEventListener('click', function (e) {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-    });
-
-    /* ==================== UTILITIES & CUSTOM MODALS ==================== */
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
-    }
-
-    function showCustomMessage(title, message) {
-        const modal = document.getElementById('custom-alert-modal');
-        document.getElementById('custom-alert-title').textContent = title;
-        document.getElementById('custom-alert-message').textContent = message;
-        const actionsDiv = document.getElementById('custom-alert-actions');
-        actionsDiv.innerHTML = `<button onclick="closeModal('custom-alert-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">OK</button>`;
-        modal.classList.remove('hidden');
-    }
-
-    function showCustomConfirm(title, message, confirmCallback) {
-        const modal = document.getElementById('custom-alert-modal');
-        document.getElementById('custom-alert-title').textContent = title;
-        document.getElementById('custom-alert-message').textContent = message;
-        const actionsDiv = document.getElementById('custom-alert-actions');
-        
-        actionsDiv.innerHTML = `
-            <button onclick="closeModal('custom-alert-modal')" class="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-xl text-white">Cancel</button>
-            <button id="confirm-action-btn" class="px-5 py-2 btn-primary rounded-xl">Confirm</button>
-        `;
-
-        const confirmBtn = document.getElementById('confirm-action-btn');
-        confirmBtn.onclick = () => {
-             closeModal('custom-alert-modal');
-             confirmCallback();
-        };
-        modal.classList.remove('hidden');
-    }
-
-    /* ==================== DATA LOADING & RENDERING ==================== */
-    function loadData() {
-        loadRentals();
-        loadCars();
-    }
-
-    // === RENTALS DASHBOARD (REAL-TIME) ===
-    function loadRentals() {
-        const tbody = document.getElementById('rentals-table-body');
-        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin text-xl"></i> Loading...</td></tr>';
-
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-        
-        rentalsCollection
-            .where('rentalDate', '>=', startOfMonth)
-            .orderBy('rentalDate', 'desc')
-            .onSnapshot(snapshot => {
-                let totalRevenue = 0;
-                let rentalCount = 0;
-
-                if (snapshot.empty) {
-                    document.getElementById('empty-rentals-message').classList.remove('hidden');
-                    tbody.innerHTML = '';
-                } else {
-                    document.getElementById('empty-rentals-message').classList.add('hidden');
-                    tbody.innerHTML = ''; 
-                    snapshot.forEach(doc => {
-                        const rental = doc.data();
-                        const tr = document.createElement('tr');
-                        tr.className = 'hover:bg-gray-800 transition-colors';
-                        tr.innerHTML = `
-                            <td class="py-3 px-3 text-sm text-gray-400">${new Date(rental.rentalDate).toLocaleDateString()}</td>
-                            <td class="py-3 px-3 font-semibold text-white">${rental.carModel}</td>
-                            <td class="py-3 px-3 text-sm text-gray-300">
-                                ${rental.customerName}<br>
-                                <span class="text-xs text-gray-500">${rental.customerPhone || rental.customerEmail}</span>
-                            </td>
-                            <td class="py-3 px-3 text-sm text-gray-400">${rental.pickupDate} → ${rental.returnDate}</td>
-                            <td class="py-3 px-3 text-center text-lg font-bold text-yellow-400">${rental.sundaysCount || 0}</td>
-                            <td class="py-3 px-3 font-semibold text-green-400">€${parseFloat(rental.totalCost).toFixed(2)}</td>
-                        `;
-                        tbody.appendChild(tr);
-                        
-                        totalRevenue += parseFloat(rental.totalCost);
-                        rentalCount++;
-                    });
-                }
-                
-                document.getElementById('total-rentals').textContent = rentalCount;
-                document.getElementById('total-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
-
-            }, error => {
-                console.error("Error listening to rentals: ", error);
-                tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-400">Error loading rentals.</td></tr>';
-                if (error.code === 'permission-denied') {
-                     showCustomMessage("Error", "Could not load rentals. Make sure your Firestore rules are set up correctly.");
-                }
-            });
-    }
-
-    // === CARS DASHBOARD (REAL-TIME) ===
-    function loadCars() {
-        const tbody = document.getElementById('cars-table-body');
-        tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin text-xl"></i> Loading...</td></tr>';
-        
-        carsCollection.orderBy('model').onSnapshot(snapshot => {
-            
-            if (snapshot.empty) {
-                document.getElementById('empty-fleet-message').classList.remove('hidden');
-                tbody.innerHTML = '';
-                document.getElementById('total-cars').textContent = 0;
-            } else {
-                document.getElementById('empty-fleet-message').classList.add('hidden');
-                tbody.innerHTML = ''; 
-                let carCount = 0;
-                snapshot.forEach(doc => {
-                    const car = doc.data();
-                    car.id = doc.id; 
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-800 transition-colors';
-                    
-                    const badgeHtml = car.badge ? `<span class="badge-${car.badge} px-2 py-1 rounded-full text-xs font-semibold">${car.badge}</span>` : '<span class="text-gray-500 text-xs">None</span>';
-                    
-                    const imageUrl = car.images && car.images.length > 0
-                        ? car.images[0]
-                        : 'https://placehold.co/80x40/1F2937/6B7280?text=No+Img';
-
-                    tr.innerHTML = `
-                        <td class="py-3 px-3 font-semibold text-white">${car.model}</td>
-                        <td class="py-3 px-3 font-semibold text-green-400">€${car.price_per_day || 'N/A'}</td>
-                        <td class="py-3 px-3">
-                            <img src="${imageUrl}" alt="${car.model}" class="w-20 h-10 object-cover rounded-md border border-gray-600">
-                        </td>
-                        <td class="py-3 px-3 text-sm text-gray-300">
-                            <i class="fas fa-users mr-1 text-orange-400"></i> ${car.seats} seats
-                            <br>
-                            <i class="fas fa-suitcase-rolling mr-1 text-orange-400"></i> ${car.luggage} bags
-                        </td>
-                        <td class="py-3 px-3">${badgeHtml}</td>
-                        <td class="py-3 px-3 flex space-x-2">
-                            <button onclick="openEditModal('${car.id}')" class="text-blue-400 hover:text-blue-300 transition-colors">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button onclick="confirmDeleteCar('${car.id}')" class="text-red-400 hover:text-red-300 transition-colors">
-                                <i class="fas fa-trash-alt"></i> Delete
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                    carCount++;
-                });
-                document.getElementById('total-cars').textContent = carCount;
-            }
-        }, error => {
-            console.error("Error listening to cars: ", error);
-            tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-400">Error loading cars.</td></tr>';
-            if (error.code === 'permission-denied') {
-                 showCustomMessage("Error", "Could not load cars. Make sure your Firestore rules are set up correctly.");
-            }
-        });
-    }
-
-    /* ==================== CAR MODAL CONTROL (ADD/EDIT) ==================== */
-
-    function displayImagePreviews(images = [], container) {
-        container.innerHTML = ''; // Clear old previews
-        images.forEach(imageUrl => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'preview-image';
-            wrapper.innerHTML = `<img src="${imageUrl}" class="w-full h-full object-cover rounded-md" data-url="${imageUrl}">`;
-            container.appendChild(wrapper);
-        });
-    }
-
-    window.openAddModal = function() {
-        editingId = null;
-        document.getElementById('modal-title').textContent = 'Add New Vehicle';
-        document.getElementById('car-form').reset();
-        document.getElementById('edit-id').value = '';
-        document.getElementById('image-previews-container').innerHTML = '';
-        document.getElementById('car-modal').classList.remove('hidden');
-    }
-
-    window.openEditModal = async function(id) {
-        try {
-            const docRef = carsCollection.doc(id);
-            const doc = await docRef.get();
-            if (!doc.exists) {
-                showCustomMessage("Error", "Car not found.");
-                return;
-            }
-            const car = doc.data();
-            editingId = id;
-            
-            document.getElementById('modal-title').textContent = `Edit Vehicle: ${car.model}`;
-            document.getElementById('edit-id').value = id;
-            document.getElementById('model').value = car.model;
-            document.getElementById('price').value = car.price_per_day || '';
-            document.getElementById('seats').value = car.seats;
-            document.getElementById('luggage').value = car.luggage;
-            document.getElementById('range').value = car.range;
-            document.getElementById('badge').value = car.badge || '';
-            document.getElementById('desc_en').value = car.description_en;
-            document.getElementById('desc_ro').value = car.description_ro;
-
-            const previewContainer = document.getElementById('image-previews-container');
-            displayImagePreviews(car.images || [], previewContainer);
-
-            document.getElementById('car-modal').classList.remove('hidden');
-        } catch (error) {
-            console.error("Error fetching car for edit: ", error);
-            showCustomMessage("Error", "Could not fetch car details.");
-        }
-    }
-
-    /* ==================== SAVE CAR (ADD/EDIT) ==================== */
-    
-    function uploadFile(file, container, modelName) {
-        return new Promise((resolve, reject) => {
-            const fileName = `${Date.now()}-${file.name}`;
-            const filePath = `cars/${modelName.replace(/ /g, '_')}/${fileName}`;
-            const fileRef = storage.ref(filePath);
-            const uploadTask = fileRef.put(file);
-
-            const progressWrapper = document.createElement('div');
-            progressWrapper.className = 'w-full';
-            progressWrapper.innerHTML = `
-                <p class="text-xs text-gray-300 truncate">${file.name}</p>
-                <div class="progress-bar-container">
-                    <div class="progress-bar"></div>
-                </div>
-            `;
-            container.appendChild(progressWrapper);
-            const progressBar = progressWrapper.querySelector('.progress-bar');
-
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    progressBar.style.width = progress + '%';
-                }, 
-                (error) => {
-                    console.error("Upload failed: ", error);
-                    progressWrapper.innerHTML = `<p class="text-xs text-red-400">Upload failed: ${file.name}</p>`;
-                    reject(error);
-                }, 
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        progressWrapper.remove();
-                        resolve(downloadURL);
-                    }).catch(reject);
-                }
-            );
-        });
-    }
-
-    document.getElementById('car-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const saveButton = document.getElementById('save-button');
-        saveButton.disabled = true;
-
-        const modelName = document.getElementById('model').value.trim();
-        const previewContainer = document.getElementById('image-previews-container');
-
-        const filesToUpload = document.getElementById('image-upload').files;
-        let uploadedImageUrls = [];
-
-        try {
-            if (filesToUpload.length > 0) {
-                previewContainer.innerHTML = '';
-                const uploadPromises = [];
-                
-                for (const file of filesToUpload) {
-                    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                         showCustomMessage('Error', `File ${file.name} is too large (> 5MB).`);
-                         continue;
-                    }
-                    uploadPromises.push(uploadFile(file, previewContainer, modelName));
-                }
-                
-                uploadedImageUrls = await Promise.all(uploadPromises);
-
-            } else if (editingId) {
-                const existingImages = previewContainer.querySelectorAll('img');
-                existingImages.forEach(img => {
-                    uploadedImageUrls.push(img.getAttribute('data-url'));
-                });
-            }
-
-            if (uploadedImageUrls.length < 1) {
-                showCustomMessage('Image Requirement Failed', 'You must provide at least 1 image.');
-                saveButton.disabled = false;
-                return;
-            }
-
-            const carData = {
-                model: modelName,
-                price_per_day: +document.getElementById('price').value,
-                seats: +document.getElementById('seats').value,
-                luggage: +document.getElementById('luggage').value,
-                range: document.getElementById('range').value.trim(),
-                badge: document.getElementById('badge').value || '',
-                images: uploadedImageUrls,
-                description_en: document.getElementById('desc_en').value.trim(),
-                description_ro: document.getElementById('desc_ro').value.trim(),
-            };
-
-            if (editingId) {
-                await carsCollection.doc(editingId).set(carData, { merge: true });
-                showCustomMessage('Success', `Vehicle ${carData.model} updated.`);
-            } else {
-                await carsCollection.add(carData);
-                showCustomMessage('Success', `New vehicle ${carData.model} added.`);
-            }
-            
-            closeModal('car-modal');
-        } catch (error) {
-            console.error("Error saving car: ", error);
-            showCustomMessage("Error", "Could not save car. Check console.");
-        } finally {
-            saveButton.disabled = false;
-        }
-    });
-
-    /* ==================== DELETE CAR ==================== */
-    
-    window.confirmDeleteCar = async function(id) {
-        try {
-            const docRef = carsCollection.doc(id);
-            const doc = await docRef.get();
-            if (!doc.exists) {
-                showCustomMessage("Error", "Car not found.");
-                return;
-            }
-            const car = doc.data();
-            
-            showCustomConfirm(
-                'Confirm Vehicle Deletion',
-                `Are you sure you want to delete ${car.model}? This action is permanent and will also delete its images.`,
-                () => deleteCar(docRef, car)
-            );
-        } catch (error) {
-            showCustomMessage("Error", "Could not fetch car details to delete.");
-        }
-    }
-
-    async function deleteCar(docRef, carData) {
-        try {
-            if (carData.images && carData.images.length > 0) {
-                const deletePromises = carData.images.map(imageUrl => {
-                    if (imageUrl.includes('placehold.co')) {
-                        return Promise.resolve();
-                    }
-                    try {
-                        const imageRef = storage.refFromURL(imageUrl);
-                        return imageRef.delete();
-                    } catch (e) {
-                        console.warn("Could not delete image, possibly invalid URL:", imageUrl);
-                        return Promise.resolve();
-                    }
-                });
-                
-                await Promise.allSettled(deletePromises);
-            }
-            
-            await docRef.delete();
-            
-            showCustomMessage('Deleted', `Vehicle ${carData.model} was successfully removed.`);
-        } catch (error) {
-            console.error("Error deleting car or its images: ", error);
-            showCustomMessage("Error", "Could not delete car. Check console.");
-        }
-    }
-    
-    /* ==================== AUTO LOGIN CHECK ==================== */
-    window.addEventListener('load', () => {
-        // === UPDATED: Set persistence to NONE ===
-        // This forces a logout when the tab is closed.
-        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
-            .then(() => {
-                // Now, set up the listener.
-                firebase.auth().onAuthStateChanged(user => {
-                    if (user) {
-                        document.getElementById('login-screen').classList.add('hidden');
-                        document.getElementById('dashboard').classList.remove('hidden');
-                        loadData(); 
-                    } else {
-                        document.getElementById('login-screen').classList.remove('hidden');
-                        document.getElementById('dashboard').classList.add('hidden');
-                    }
-                });
-            })
-            .catch((error) => {
-                console.error("Error setting auth persistence: ", error);
-            });
-    });
-
-    // Make functions globally accessible
-    window.openAddModal = openAddModal;
-    window.openEditModal = openEditModal;
-    window.confirmDeleteCar = confirmDeleteCar;
-    window.logout = logout;
-    window.closeModal = closeModal;
-
+/* globals for inline handlers */
+Object.assign(window,{
+  logout, go, openNav, closeNav, closeSheet, openAddModal, openEditModal, confirmDeleteCar,
+  saveGlobalRates, resetGlobalRates, runCalc, calcStep, useGlobalForCar, dropShot,
+  calMove, calToday, pickCalCar, tapDay, clearRange, saveBlock, removeBlock,
+  blockFromBooking, setStatus, deleteBooking, renderBookings, approveReview, deleteReview
+});
 </script>
-
 </body>
 </html>
